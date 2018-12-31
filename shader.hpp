@@ -3,8 +3,12 @@
 
 #ifndef GLEW_H
 #define GLEW_H
-#include <GL/glew.h>
-#include <GL/gl.h>
+#include <gl/glew.h>
+#endif
+
+#ifndef GL_H
+#define GL_H
+#include <SDL_opengl.h>
 #endif
 
 #ifndef STRING_H

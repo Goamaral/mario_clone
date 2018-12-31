@@ -3,6 +3,13 @@
 #include <SDL2/SDL.h>
 #endif
 
+/*
+#ifndef SHADER_H
+#define SHADER_H
+#include "shader.hpp"
+#endif
+*/
+
 class Game {
   public:
     Game(int width, int height, const char *title);
