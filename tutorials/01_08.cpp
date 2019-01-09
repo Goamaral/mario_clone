@@ -5,8 +5,9 @@
 // 05_optimized_surface_loading_and_soft_stretching
 // 06_loading_PNGs_with_SDL_image
 // 07_texture_loading_and_rendering
+// 08_geometry_rendering
 
-#include "01_07.hpp"
+#include "01_08.hpp"
 
 // Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -227,6 +228,10 @@ void game_loop() {
 
   // State control
   bool render_texture = false;
+  bool render_geometry = false;
+
+  SDL_Rect fill_rect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+  SDL_Rect outline_rect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
 
   // While application is running
   while (true) {
@@ -265,6 +270,10 @@ void game_loop() {
               current_surface = png_surface;
               break;
 
+            case SDLK_g:
+              render_geometry = true;
+              break;
+
             default:
               current_surface = key_press_surfaces[KEY_PRESS_SURFACE_DEFAULT];
               break;
@@ -290,6 +299,46 @@ void game_loop() {
       SDL_Delay(5000);
 
       render_texture = false;
+    } else if (render_geometry) {
+      // Show geometry for 5 seconds
+      // Clear screen
+      SDL_RenderClear(screen_renderer);
+
+      // Pick red color for renderer
+      SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0x00, 0x00, 0xFF);
+
+      // Render rectangle
+      SDL_RenderFillRect(screen_renderer, &fill_rect);
+
+      // Pick green color for renderer
+      SDL_SetRenderDrawColor(screen_renderer, 0x00, 0xFF, 0x00, 0xFF);
+
+      // Draw react outline
+      SDL_RenderDrawRect(screen_renderer, &outline_rect);
+
+      // Pick blue color for renderer
+      SDL_SetRenderDrawColor(screen_renderer, 0x00, 0x00, 0xFF, 0xFF);
+
+      // Draw line
+      SDL_RenderDrawLine(screen_renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+
+      // Pick yellow color for renderer
+      SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0xFF, 0x00, 0xFF);
+
+      // Draw dotted line
+      for (int i = 0; i < SCREEN_HEIGHT; i += 4) {
+        SDL_RenderDrawPoint(screen_renderer, SCREEN_WIDTH / 2, i);
+      }
+
+      // Update screen
+      SDL_RenderPresent(screen_renderer);
+
+      SDL_Delay(5000);
+
+      // Reset renderer color to black
+      SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+      render_geometry = false;
     } else {
       // Apply the image
       SDL_BlitSurface(current_surface, NULL, screen_surface, NULL);
