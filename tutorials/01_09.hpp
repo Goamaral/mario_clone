@@ -53,3 +53,14 @@ void close();
 
 // Game event loop
 void game_loop();
+
+// Render surface
+void render_surface();
+
+// Render texture
+void render_texture();
+
+// Render geometry
+void render_geometry();
+
+void render_viewport();

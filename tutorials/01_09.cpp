@@ -6,8 +6,9 @@
 // 06_loading_PNGs_with_SDL_image
 // 07_texture_loading_and_rendering
 // 08_geometry_rendering
+// 09_the_viewport
 
-#include "01_08.hpp"
+#include "01_09.hpp"
 
 // Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -226,13 +227,6 @@ void game_loop() {
   // Set default surface
   current_surface = key_press_surfaces[KEY_PRESS_SURFACE_DEFAULT];
 
-  // State control
-  bool render_texture = false;
-  bool render_geometry = false;
-
-  SDL_Rect fill_rect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
-  SDL_Rect outline_rect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
-
   // While application is running
   while (true) {
     // Handle events on queue
@@ -247,31 +241,40 @@ void game_loop() {
           switch(ev.key.keysym.sym) {
             case SDLK_UP:
               current_surface = key_press_surfaces[KEY_PRESS_SURFACE_UP];
+              render_surface();
               break;
 
             case SDLK_DOWN:
               current_surface = key_press_surfaces[KEY_PRESS_SURFACE_DOWN];
+              render_surface();
               break;
 
             case SDLK_LEFT:
               current_surface = key_press_surfaces[KEY_PRESS_SURFACE_LEFT];
+              render_surface();
               break;
 
             case SDLK_RIGHT:
               current_surface = key_press_surfaces[KEY_PRESS_SURFACE_RIGHT];
+              render_surface();
               break;
 
             case SDLK_p:
               current_surface = png_surface;
+              render_surface();
               break;
 
             case SDLK_t:
-              render_texture = true;
               current_surface = png_surface;
+              render_texture();
               break;
 
             case SDLK_g:
-              render_geometry = true;
+              render_geometry();
+              break;
+
+            case SDLK_v:
+              render_viewport();
               break;
 
             default:
@@ -284,67 +287,120 @@ void game_loop() {
           break;
       }
     }
-
-    if (render_texture) {
-      // Show texture for 5 seconds
-      // Clear screen
-      SDL_RenderClear(screen_renderer);
-
-      // Render texture to screen
-      SDL_RenderCopy(screen_renderer, screen_texture, NULL, NULL);
-
-      // Update screen
-      SDL_RenderPresent(screen_renderer);
-
-      SDL_Delay(5000);
-
-      render_texture = false;
-    } else if (render_geometry) {
-      // Show geometry for 5 seconds
-      // Clear screen
-      SDL_RenderClear(screen_renderer);
-
-      // Pick red color for renderer
-      SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0x00, 0x00, 0xFF);
-
-      // Render rectangle
-      SDL_RenderFillRect(screen_renderer, &fill_rect);
-
-      // Pick green color for renderer
-      SDL_SetRenderDrawColor(screen_renderer, 0x00, 0xFF, 0x00, 0xFF);
-
-      // Draw react outline
-      SDL_RenderDrawRect(screen_renderer, &outline_rect);
-
-      // Pick blue color for renderer
-      SDL_SetRenderDrawColor(screen_renderer, 0x00, 0x00, 0xFF, 0xFF);
-
-      // Draw line
-      SDL_RenderDrawLine(screen_renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
-
-      // Pick yellow color for renderer
-      SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0xFF, 0x00, 0xFF);
-
-      // Draw dotted line
-      for (int i = 0; i < SCREEN_HEIGHT; i += 4) {
-        SDL_RenderDrawPoint(screen_renderer, SCREEN_WIDTH / 2, i);
-      }
-
-      // Update screen
-      SDL_RenderPresent(screen_renderer);
-
-      SDL_Delay(5000);
-
-      // Reset renderer color to black
-      SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-      render_geometry = false;
-    } else {
-      // Apply the image
-      SDL_BlitSurface(current_surface, NULL, screen_surface, NULL);
-
-      // Update the surface
-      SDL_UpdateWindowSurface(screen_window);
-    }
   }
+}
+
+void render_surface() {
+  // Apply the image
+  SDL_BlitSurface(current_surface, NULL, screen_surface, NULL);
+
+  // Update the surface
+  SDL_UpdateWindowSurface(screen_window);
+}
+
+void render_texture() {
+  // Show texture for 5 seconds
+  // Clear screen
+  SDL_RenderClear(screen_renderer);
+
+  // Render texture to screen
+  SDL_RenderCopy(screen_renderer, screen_texture, NULL, NULL);
+
+  // Update screen
+  SDL_RenderPresent(screen_renderer);
+
+  SDL_Delay(5000);
+}
+
+void render_geometry() {
+  SDL_Rect fill_rect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+  SDL_Rect outline_rect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
+
+  // Show geometry for 5 seconds
+  // Clear screen
+  SDL_RenderClear(screen_renderer);
+
+  // Pick red color for renderer
+  SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0x00, 0x00, 0xFF);
+
+  // Render rectangle
+  SDL_RenderFillRect(screen_renderer, &fill_rect);
+
+  // Pick green color for renderer
+  SDL_SetRenderDrawColor(screen_renderer, 0x00, 0xFF, 0x00, 0xFF);
+
+  // Draw react outline
+  SDL_RenderDrawRect(screen_renderer, &outline_rect);
+
+  // Pick blue color for renderer
+  SDL_SetRenderDrawColor(screen_renderer, 0x00, 0x00, 0xFF, 0xFF);
+
+  // Draw line
+  SDL_RenderDrawLine(screen_renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+
+  // Pick yellow color for renderer
+  SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0xFF, 0x00, 0xFF);
+
+  // Draw dotted line
+  for (int i = 0; i < SCREEN_HEIGHT; i += 4) {
+    SDL_RenderDrawPoint(screen_renderer, SCREEN_WIDTH / 2, i);
+  }
+
+  // Update screen
+  SDL_RenderPresent(screen_renderer);
+
+  SDL_Delay(5000);
+
+  // Reset renderer color to black
+  SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+}
+
+void render_viewport() {
+  // Show viewport for 5 seconds
+
+  // Top left corner viewport
+  SDL_Rect top_left_viewport;
+  top_left_viewport.x = 0;
+  top_left_viewport.y = 0;
+  top_left_viewport.w = SCREEN_WIDTH / 2;
+  top_left_viewport.h = SCREEN_HEIGHT / 2;
+  SDL_RenderSetViewport(screen_renderer, &top_left_viewport);
+
+  // Render texture to screen
+  SDL_RenderCopy(screen_renderer, screen_texture, NULL, NULL);
+
+  // Top right viewport
+  SDL_Rect top_right_viewport;
+  top_right_viewport.x = SCREEN_WIDTH / 2;
+  top_right_viewport.y = 0;
+  top_right_viewport.w = SCREEN_WIDTH / 2;
+  top_right_viewport.h = SCREEN_HEIGHT / 2;
+  SDL_RenderSetViewport(screen_renderer, &top_right_viewport);
+
+  // Render texture to screen
+  SDL_RenderCopy(screen_renderer, screen_texture, NULL, NULL);
+
+  // Bottom viewport
+  SDL_Rect bottom_viewport;
+  bottom_viewport.x = 0;
+  bottom_viewport.y = SCREEN_HEIGHT / 2;
+  bottom_viewport.w = SCREEN_WIDTH;
+  bottom_viewport.h = SCREEN_HEIGHT / 2;
+  SDL_RenderSetViewport(screen_renderer, &bottom_viewport );
+
+  // Render texture to screen
+  SDL_RenderCopy(screen_renderer, screen_texture, NULL, NULL);
+
+  // Update screen
+  SDL_RenderPresent(screen_renderer);
+
+  SDL_Rect original_viewport;
+  original_viewport.x = 0;
+  original_viewport.y = 0;
+  original_viewport.w = SCREEN_WIDTH;
+  original_viewport.h = SCREEN_HEIGHT;
+
+  SDL_RenderSetViewport(screen_renderer, &original_viewport);
+
+  SDL_Delay(5000);
 }
