@@ -18,17 +18,32 @@
 #include <string>
 #endif
 
+#ifndef STORE_H
+#define STORE_H
+#include "Store.cpp"
+#endif
+
+/*
+#ifndef TEXTURE_H
+#define TEXTURE_H
+#include "texture.cpp"
+#endif
+*/
+
 enum {
   KEY_PRESS_SURFACE_DEFAULT,
   KEY_PRESS_SURFACE_UP,
   KEY_PRESS_SURFACE_DOWN,
   KEY_PRESS_SURFACE_LEFT,
   KEY_PRESS_SURFACE_RIGHT,
+  KEY_PRESS_SURFACE_IMAGE,
   KEY_PRESS_SURFACE_TOTAL
 };
 
+void run();
+
 // Starts up SDL and creates window
-bool init();
+bool init(Store&);
 
 // Load image
 SDL_Surface* load_image(std::string);
@@ -40,13 +55,13 @@ SDL_Surface* load_surface(std::string);
 SDL_Texture* load_texture(std::string);
 
 // Load surface images
-bool load_surfaces();
+bool load_surfaces(Store&);
 
 // Load texture images
 bool load_textures();
 
 // Load surface and texture images
-bool load_media();
+bool load_media(Store&);
 
 // Frees media and shuts down SDL
 void close();

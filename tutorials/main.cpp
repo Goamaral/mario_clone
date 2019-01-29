@@ -8,15 +8,15 @@
 // 08_geometry_rendering
 // 09_the_viewport
 
-#include "01_09.hpp"
+#ifndef MAIN_H
+#define MAIN_H
+#include "main.hpp"
+#endif
 
 // Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-SDL_Window* screen_window = NULL; // Window we'll be rendering to
-SDL_Surface* screen_surface = NULL; // Surface contained in the window
-SDL_Renderer* screen_renderer = NULL; // Window renderer
 SDL_Texture* screen_texture = NULL; // Window texture
 
 SDL_Surface* key_press_surfaces[KEY_PRESS_SURFACE_TOTAL]; // Surfaces that correspond to a keypress
@@ -24,11 +24,22 @@ SDL_Surface* png_surface = NULL; // PNG surface
 SDL_Surface* current_surface = NULL; // Selected surface
 
 int main (int argc, char **args) {
+  run();
+
+  // Free resources and close SDL
+  close();
+
+  return 0;
+}
+
+void run() {
+  Store store;
+
   // Start up SDL and create window
-  if (!init()) {
+  if (!init(store)) {
     printf("Failed to initialize!\n");
   } else {
-    if (load_media()) {
+    if (load_media(store)) {
       // Apply the image stretched
       SDL_Rect stretch_rect;
       stretch_rect.x = 0;
@@ -38,10 +49,10 @@ int main (int argc, char **args) {
       SDL_Surface* stretched_surface = load_surface("resources/surfaces/stretch.bmp");
 
       // Apply the image
-      SDL_BlitScaled(stretched_surface, NULL, screen_surface, &stretch_rect);
+      SDL_BlitScaled(stretched_surface, NULL, store.window_surface_p->pointer, &stretch_rect);
 
       // Update the surface
-      SDL_UpdateWindowSurface(screen_window);
+      SDL_UpdateWindowSurface(store.window_p->pointer);
 
       // Wait 2 seconds
       SDL_Delay(2000);
@@ -53,14 +64,9 @@ int main (int argc, char **args) {
       printf("Failed to load media\n");
     }
   }
-
-  // Free resources and close SDL
-  close();
-
-  return 0;
 }
 
-bool init() {
+bool init(Store& store) {
   // Initialization flag
   bool success = true;
 
@@ -70,21 +76,15 @@ bool init() {
     success = false;
   } else {
     // Create window
-    screen_window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, \
-      SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN \
-    );
+    success = store.buildWindow("SDL Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    if (!screen_window) {
+    if (!success) {
       printf("Window could not be created SDL_Error: %s\n", SDL_GetError());
-      success = false;
     } else {
       // Create renderer for window
-      screen_renderer = SDL_CreateRenderer(screen_window, -1, SDL_RENDERER_ACCELERATED);
+      success = store.buildWindowRenderer();
 
-      if (screen_renderer) {
-        // Initialize renderer color
-        SDL_SetRenderDrawColor(screen_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
+      if (success) {
         // Initialize PNG loading
         int imgFlags = IMG_INIT_PNG;
 
@@ -93,7 +93,7 @@ bool init() {
           success = false;
         } else {
           // Get window surface
-          screen_surface = SDL_GetWindowSurface(screen_window);
+          store.buildWindowSurface();
         }
       } else {
         printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
@@ -113,28 +113,6 @@ SDL_Surface* load_image(std::string image_location) {
   }
 
   return loaded_surface;
-}
-
-SDL_Surface* load_surface(std::string surface_location) {
-  // Optimized image
-	SDL_Surface* optimized_surface = NULL;
-
-  // Load surface image
-  SDL_Surface* loaded_surface = load_image(surface_location);
-
-  if (loaded_surface) {
-    // Convert surface to screen format
-		optimized_surface = SDL_ConvertSurface(loaded_surface, screen_surface->format, 0);
-
-    if (!optimized_surface) {
-			printf("Unable to optimize image %s SDL Error: %s\n", surface_location.c_str(), SDL_GetError());
-		}
-
-		// Free old loaded surface
-		SDL_FreeSurface(loaded_surface);
-  }
-
-  return optimized_surface;
 }
 
 SDL_Texture* load_texture(std::string texture_location) {
@@ -159,39 +137,29 @@ SDL_Texture* load_texture(std::string texture_location) {
   return new_texture;
 }
 
-bool load_surfaces() {
-  key_press_surfaces[KEY_PRESS_SURFACE_DEFAULT] = load_surface("resources/surfaces/default.bmp");
-  if (!key_press_surfaces[KEY_PRESS_SURFACE_DEFAULT]) return false;
-
-  key_press_surfaces[KEY_PRESS_SURFACE_UP] = load_surface("resources/surfaces/up.bmp");
-  if (!key_press_surfaces[KEY_PRESS_SURFACE_UP]) return false;
-
-  key_press_surfaces[KEY_PRESS_SURFACE_DOWN] = load_surface("resources/surfaces/down.bmp");
-  if (!key_press_surfaces[KEY_PRESS_SURFACE_DOWN]) return false;
-
-  key_press_surfaces[KEY_PRESS_SURFACE_LEFT] = load_surface("resources/surfaces/left.bmp");
-  if (!key_press_surfaces[KEY_PRESS_SURFACE_LEFT]) return false;
-
-  key_press_surfaces[KEY_PRESS_SURFACE_RIGHT] = load_surface("resources/surfaces/right.bmp");
-  if (!key_press_surfaces[KEY_PRESS_SURFACE_RIGHT]) return false;
-
-  png_surface = load_surface("resources/surfaces/image.png");
-  if (!png_surface) return false;
+bool load_surfaces(Store& store) {
+  if (!store.loadSurface(KEY_PRESS_SURFACE_DEFAULT, "resources/surfaces/default.bmp")) return false;
+  if (!store.loadSurface(KEY_PRESS_SURFACE_UP, "resources/surfaces/up.bmp")) return false;
+  if (!store.loadSurface(KEY_PRESS_SURFACE_DOWN, "resources/surfaces/down.bmp")) return false;
+  if (!store.loadSurface(KEY_PRESS_SURFACE_LEFT, "resources/surfaces/left.bmp")) return false;
+  if (!store.loadSurface(KEY_PRESS_SURFACE_RIGHT, "resources/surfaces/right.bmp")) return false;
+  if (!store.loadSurface(KEY_PRESS_SURFACE_IMAGE, "resources/surfaces/image.bmp")) return false;
 
   return true;
 }
 
-bool load_textures() {
+// HERE
+bool load_textures(Store& store) {
   screen_texture = load_texture("resources/textures/texture.png");
   if (!screen_texture) return false;
 
   return true;
 }
 
-bool load_media() {
-  if (!load_surfaces()) return false;
+bool load_media(Store& store) {
+  if (!load_surfaces(store)) return false;
 
-  if (!load_textures()) return false;
+  if (!load_textures(store)) return false;
 
   return true;
 }
@@ -206,14 +174,6 @@ void close() {
     SDL_FreeSurface(key_press_surfaces[i]);
     key_press_surfaces[i] = NULL;
   }
-
-  // Destroy renderer
-  SDL_DestroyRenderer(screen_renderer);
-  screen_renderer = NULL;
-
-  // Destroy window
-  SDL_DestroyWindow(screen_window);
-  screen_window = NULL;
 
   // Quit SDL subsystems
   IMG_Quit();
