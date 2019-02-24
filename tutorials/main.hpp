@@ -1,44 +1,10 @@
-#ifndef SDL_H
-#define SDL_H
 #include <SDL2/SDL.h>
-#endif
 
-#ifndef SDL_IMAGE_H
-#define SDL_IMAGE_H
-#include <SDL2/SDL_image.h>
-#endif
-
-#ifndef SDTIO_H
-#define SDTIO_H
+#include <memory>
 #include <cstdio>
-#endif
-
-#ifndef STRING_H
-#define STRING_H
 #include <string>
-#endif
 
-#ifndef STORE_H
-#define STORE_H
-#include "Store.cpp"
-#endif
-
-/*
-#ifndef TEXTURE_H
-#define TEXTURE_H
-#include "texture.cpp"
-#endif
-*/
-
-enum {
-  KEY_PRESS_SURFACE_DEFAULT,
-  KEY_PRESS_SURFACE_UP,
-  KEY_PRESS_SURFACE_DOWN,
-  KEY_PRESS_SURFACE_LEFT,
-  KEY_PRESS_SURFACE_RIGHT,
-  KEY_PRESS_SURFACE_IMAGE,
-  KEY_PRESS_SURFACE_TOTAL
-};
+#include "Store.hpp"
 
 void run();
 
@@ -67,7 +33,7 @@ bool load_media(Store&);
 void close();
 
 // Game event loop
-void game_loop();
+void game_loop(Store*);
 
 // Render surface
 void render_surface();
