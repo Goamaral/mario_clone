@@ -23,10 +23,25 @@
 #include <vector>
 #endif
 
-#ifndef MAIN_H
-#define MAIN_H
-#include "main.hpp"
+#ifndef SURFACE_H
+#define SURFACE_H
+#include "Surface.cpp"
 #endif
+
+#ifndef TEXTURE_H
+#define TEXTURE_H
+#include "Texture.cpp"
+#endif
+
+enum {
+  KEY_PRESS_SURFACE_DEFAULT,
+  KEY_PRESS_SURFACE_UP,
+  KEY_PRESS_SURFACE_DOWN,
+  KEY_PRESS_SURFACE_LEFT,
+  KEY_PRESS_SURFACE_RIGHT,
+  KEY_PRESS_SURFACE_IMAGE,
+  KEY_PRESS_SURFACE_TOTAL
+};
 
 class Store {
   private:
@@ -35,13 +50,12 @@ class Store {
     ~Store();
 
     Window* window_p = NULL;
-    WindowRenderer* window_renderer_p = NULL;
-    WindowSurface* window_surface_p = NULL;
     std::vector<SDL_Surface*> surfaces;
 
-    bool buildWindow(std::string, int, int);
-    bool buildWindowRenderer();
-    bool buildWindowSurface();
+    bool init();
+    bool load_media();
+    bool load_textures();
+    bool load_surfaces();
     bool loadSurface(int, std::string);
 };
 
@@ -54,51 +68,52 @@ Store::~Store() {
   printf("CLOSING STORE\n");
 
   delete window_p;
-  delete window_renderer_p;
-  delete window_surface_p;
 }
 
-bool Store::buildWindow(std::string title, int width, int height) {
-  window_p = new Window(title, width, height);
+bool Store::load_media() {
+  if (!this->load_surfaces()) return false;
 
-  return window_p->pointer != NULL;
+  if (!this->load_textures()) return false;
+
+  return true;
 }
 
-bool Store::buildWindowRenderer() {
-  window_renderer_p = new WindowRenderer(window_p);
+bool Store::load_textures() {
+  screen_texture = Texture::load("resources/textures/texture.png");
+  if (!screen_texture) return false;
 
-  // Initialize renderer color
-  if (window_renderer_p) SDL_SetRenderDrawColor(window_renderer_p->pointer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-  return window_renderer_p->pointer != NULL;
+  return true;
 }
 
-bool Store::buildWindowSurface() {
-  window_surface_p = new WindowSurface(window_p);
+bool Store::load_surfaces() {
+  if (!this->loadSurface(KEY_PRESS_SURFACE_DEFAULT, "resources/surfaces/default.bmp")) return false;
+  if (!this->loadSurface(KEY_PRESS_SURFACE_UP, "resources/surfaces/up.bmp")) return false;
+  if (!this->loadSurface(KEY_PRESS_SURFACE_DOWN, "resources/surfaces/down.bmp")) return false;
+  if (!this->loadSurface(KEY_PRESS_SURFACE_LEFT, "resources/surfaces/left.bmp")) return false;
+  if (!this->loadSurface(KEY_PRESS_SURFACE_RIGHT, "resources/surfaces/right.bmp")) return false;
+  if (!this->loadSurface(KEY_PRESS_SURFACE_IMAGE, "resources/surfaces/image.bmp")) return false;
 
-  return window_surface_p->pointer != NULL;
+  return true;
+}
+
+bool Store::init() {
+  // Initialization flag
+  bool success = true;
+
+  // Initialize SDL
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    printf("SDL could not initialize SDL_Error: %s\n", SDL_GetError());
+    success = false;
+  } else {
+    // Create window
+    window_p = new Window("SDL Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT);
+    success = window_p->loaded;
+  }
+
+  return success;
 }
 
 bool Store::loadSurface(int index, std::string resource_path) {
-  // Optimized image
-	SDL_Surface* optimized_surface = NULL;
-
-  // Load surface image
-  SDL_Surface* loaded_surface = load_image(resource_path);
-
-  if (loaded_surface) {
-    // Convert surface to screen format
-		optimized_surface = SDL_ConvertSurface(loaded_surface, window_surface_p->pointer->format, 0);
-
-    if (!optimized_surface) {
-			printf("Unable to optimize image %s SDL Error: %s\n", resource_path.c_str(), SDL_GetError());
-		}
-
-		// Free old loaded surface
-		SDL_FreeSurface(loaded_surface);
-  }
-
-  surfaces.at(index) = optimized_surface;
-
-  return optimized_surface != NULL;
+  surfaces.at(index) = Surface::loadOptimized(resource_path, window_p->surface_p);
+  return surfaces.at(index) != NULL;
 }

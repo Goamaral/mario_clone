@@ -18,6 +18,11 @@
 #include <cstdio>
 #endif
 
+#ifndef SURFACE_H
+#define SURFACE_H
+#include "Surface.cpp"
+#endif
+
 class Texture {
   public:
     Texture(SDL_Renderer* screen_renderer);
@@ -26,9 +31,10 @@ class Texture {
     int width = 0;
     int height = 0;
 
+    static SDL_Texture* load(std::string, SDL_Renderer*);
     bool loadFromFile(std::string path);
     void render(int x, int y);
-    void free();
+    void free(std::string);
 
   private:
     SDL_Texture* texture = NULL;
@@ -37,6 +43,28 @@ class Texture {
 
 Texture::Texture(SDL_Renderer* screen_renderer) {
   this->screen_renderer = screen_renderer;
+}
+
+SDL_Texture* Texture::load(std::string resource_path, SDL_Renderer* renderer) {
+  // Final texture
+  SDL_Texture* new_texture;
+
+  // Load texture image
+  SDL_Surface* loaded_surface = Surface::loadFromImage(resource_path);
+
+  if (loaded_surface) {
+    // Create texture from surface pixels
+    new_texture = SDL_CreateTextureFromSurface(renderer, loaded_surface);
+
+    if (!new_texture) {
+      printf("Unable to create texture from %s! SDL Error: %s\n", resource_path.c_str(), SDL_GetError());
+    }
+
+    // Free surface
+    SDL_FreeSurface(loaded_surface);
+  }
+
+  return new_texture;
 }
 
 bool Texture::loadFromFile(std::string path) {

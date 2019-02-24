@@ -3,11 +3,6 @@
 #include <SDL2/SDL.h>
 #endif
 
-#ifndef SDL_IMAGE_H
-#define SDL_IMAGE_H
-#include <SDL2/SDL_image.h>
-#endif
-
 #ifndef SDTIO_H
 #define SDTIO_H
 #include <cstdio>
@@ -23,22 +18,17 @@
 #include "Store.cpp"
 #endif
 
+#ifndef MEMORY_H
+#define MEMORY_H
+#include <memory>
+#endif
+
 /*
 #ifndef TEXTURE_H
 #define TEXTURE_H
 #include "texture.cpp"
 #endif
 */
-
-enum {
-  KEY_PRESS_SURFACE_DEFAULT,
-  KEY_PRESS_SURFACE_UP,
-  KEY_PRESS_SURFACE_DOWN,
-  KEY_PRESS_SURFACE_LEFT,
-  KEY_PRESS_SURFACE_RIGHT,
-  KEY_PRESS_SURFACE_IMAGE,
-  KEY_PRESS_SURFACE_TOTAL
-};
 
 void run();
 
