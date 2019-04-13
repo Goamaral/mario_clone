@@ -1,34 +1,10 @@
-#ifndef SDL_H
-#define SDL_H
 #include <SDL2/SDL.h>
-#endif
 
-#ifndef SDTIO_H
-#define SDTIO_H
-#include <cstdio>
-#endif
-
-#ifndef STRING_H
-#define STRING_H
-#include <string>
-#endif
-
-#ifndef STORE_H
-#define STORE_H
-#include "Store.cpp"
-#endif
-
-#ifndef MEMORY_H
-#define MEMORY_H
 #include <memory>
-#endif
+#include <cstdio>
+#include <string>
 
-/*
-#ifndef TEXTURE_H
-#define TEXTURE_H
-#include "texture.cpp"
-#endif
-*/
+#include "Store.hpp"
 
 void run();
 
@@ -57,7 +33,7 @@ bool load_media(Store&);
 void close();
 
 // Game event loop
-void game_loop();
+void game_loop(Store*);
 
 // Render surface
 void render_surface();

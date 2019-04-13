@@ -1,85 +1,31 @@
-#ifndef MEMORY_H
-#define MEMORY_H
-#include <memory>
-#endif
-
-#ifndef WINDOW_H
-#define WINDOW_H
-#include "Window.cpp"
-#endif
-
-#ifndef WINDOW_SURFACE_H
-#define WINDOW_SURFACE_H
-#include "WindowSurface.cpp"
-#endif
-
-#ifndef WINDOW_RENDERER_H
-#define WINDOW_RENDERER_H
-#include "WindowRenderer.cpp"
-#endif
-
-#ifndef VECTOR_H
-#define VECTOR_H
-#include <vector>
-#endif
-
-#ifndef SURFACE_H
-#define SURFACE_H
-#include "Surface.cpp"
-#endif
-
-#ifndef TEXTURE_H
-#define TEXTURE_H
-#include "Texture.cpp"
-#endif
-
-enum {
-  KEY_PRESS_SURFACE_DEFAULT,
-  KEY_PRESS_SURFACE_UP,
-  KEY_PRESS_SURFACE_DOWN,
-  KEY_PRESS_SURFACE_LEFT,
-  KEY_PRESS_SURFACE_RIGHT,
-  KEY_PRESS_SURFACE_IMAGE,
-  KEY_PRESS_SURFACE_TOTAL
-};
-
-class Store {
-  private:
-  public:
-    Store(/* args */);
-    ~Store();
-
-    Window* window_p = NULL;
-    std::vector<SDL_Surface*> surfaces;
-
-    bool init();
-    bool load_media();
-    bool load_textures();
-    bool load_surfaces();
-    bool loadSurface(int, std::string);
-};
+#include "Store.hpp"
 
 Store::Store(/* args */) {
-  printf("OPENING STORE\n");
-  surfaces.reserve(KEY_PRESS_SURFACE_TOTAL);
 }
 
 Store::~Store() {
-  printf("CLOSING STORE\n");
-
+  freeSurfaces();
+  Texture::free(screen_texture);
   delete window_p;
 }
 
-bool Store::load_media() {
-  if (!this->load_surfaces()) return false;
+void Store::freeSurfaces() {
+  auto it = surfaces.begin();
+  while (it != surfaces.end()) {
+    Surface::free(*it);
+    ++it;
+  }
+}
 
-  if (!this->load_textures()) return false;
+bool Store::load_media() {
+  if (!load_surfaces()) return false;
+  if (!load_textures()) return false;
 
   return true;
 }
 
 bool Store::load_textures() {
-  screen_texture = Texture::load("resources/textures/texture.png");
+  screen_texture = Texture::load("resources/textures/texture.png", window_p->renderer_p);
   if (!screen_texture) return false;
 
   return true;
@@ -91,12 +37,12 @@ bool Store::load_surfaces() {
   if (!this->loadSurface(KEY_PRESS_SURFACE_DOWN, "resources/surfaces/down.bmp")) return false;
   if (!this->loadSurface(KEY_PRESS_SURFACE_LEFT, "resources/surfaces/left.bmp")) return false;
   if (!this->loadSurface(KEY_PRESS_SURFACE_RIGHT, "resources/surfaces/right.bmp")) return false;
-  if (!this->loadSurface(KEY_PRESS_SURFACE_IMAGE, "resources/surfaces/image.bmp")) return false;
+  if (!this->loadSurface(KEY_PRESS_SURFACE_IMAGE, "resources/surfaces/image.png")) return false;
 
   return true;
 }
 
-bool Store::init() {
+bool Store::init(const char* title, int width, int height) {
   // Initialization flag
   bool success = true;
 
@@ -106,7 +52,7 @@ bool Store::init() {
     success = false;
   } else {
     // Create window
-    window_p = new Window("SDL Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT);
+    window_p = new Window(title, width, height);
     success = window_p->loaded;
   }
 
@@ -114,6 +60,6 @@ bool Store::init() {
 }
 
 bool Store::loadSurface(int index, std::string resource_path) {
-  surfaces.at(index) = Surface::loadOptimized(resource_path, window_p->surface_p);
+  surfaces.push_back(Surface::loadOptimized(resource_path, window_p->surface_p));
   return surfaces.at(index) != NULL;
 }

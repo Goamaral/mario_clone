@@ -14,14 +14,9 @@
 #endif
 
 // Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
-SDL_Texture* screen_texture = NULL; // Window texture
-
-SDL_Surface* key_press_surfaces[KEY_PRESS_SURFACE_TOTAL]; // Surfaces that correspond to a keypress
-SDL_Surface* png_surface = NULL; // PNG surface
-SDL_Surface* current_surface = NULL; // Selected surface
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+#define WINDOW_TITLE "SDL Tutorial"
 
 int main (int argc, char **args) {
   run();
@@ -36,7 +31,7 @@ void run() {
   std::unique_ptr<Store> store_p(new Store());
 
   // Start up SDL and create window
-  if (!store_p->init()) {
+  if (!store_p->init(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)) {
     printf("Failed to initialize!\n");
   } else {
     if (store_p->load_media()) {
@@ -44,12 +39,13 @@ void run() {
       SDL_Rect stretch_rect;
       stretch_rect.x = 0;
       stretch_rect.y = 0;
-      stretch_rect.w = SCREEN_WIDTH;
-      stretch_rect.h = SCREEN_HEIGHT;
-      SDL_Surface* stretched_surface = Surface::loadOptimized("resources/surfaces/stretch.bmp", store_p->window_surface_p);
+      stretch_rect.w = WINDOW_WIDTH;
+      stretch_rect.h = WINDOW_HEIGHT;
+      SDL_Surface* stretched_surface = Surface::loadOptimized("resources/surfaces/stretch.bmp", store_p->window_p->surface_p);
 
       // Apply the image
-      SDL_BlitScaled(stretched_surface, NULL, store_p->window_surface_p->pointer, &stretch_rect);
+      SDL_BlitScaled(stretched_surface, NULL, store_p->window_p->surface_p, &stretch_rect);
+
 
       // Update the surface
       SDL_UpdateWindowSurface(store_p->window_p->pointer);
@@ -59,7 +55,7 @@ void run() {
 
       Surface::free(stretched_surface);
 
-      game_loop();
+      game_loop(store_p.get());
     } else {
       printf("Failed to load media\n");
     }
@@ -67,27 +63,17 @@ void run() {
 }
 
 void close() {
-  // Free texture
-  SDL_DestroyTexture(screen_texture);
-  screen_texture = NULL;
-
-  // Free surfaces
-  for (int i = 0; i < KEY_PRESS_SURFACE_TOTAL; ++i) {
-    SDL_FreeSurface(key_press_surfaces[i]);
-    key_press_surfaces[i] = NULL;
-  }
-
   // Quit SDL subsystems
   IMG_Quit();
   SDL_Quit();
 }
 
-void game_loop() {
+void game_loop(Store* store_p) {
   // Event object
   SDL_Event ev;
 
   // Set default surface
-  current_surface = key_press_surfaces[KEY_PRESS_SURFACE_DEFAULT];
+  store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_DEFAULT]);
 
   // While application is running
   while (true) {
@@ -102,45 +88,39 @@ void game_loop() {
           // Select surfaces based on key press
           switch(ev.key.keysym.sym) {
             case SDLK_UP:
-              current_surface = key_press_surfaces[KEY_PRESS_SURFACE_UP];
-              render_surface();
+              store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_UP]);
               break;
 
             case SDLK_DOWN:
-              current_surface = key_press_surfaces[KEY_PRESS_SURFACE_DOWN];
-              render_surface();
+              store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_DOWN]);
               break;
 
             case SDLK_LEFT:
-              current_surface = key_press_surfaces[KEY_PRESS_SURFACE_LEFT];
-              render_surface();
+              store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_LEFT]);
               break;
 
             case SDLK_RIGHT:
-              current_surface = key_press_surfaces[KEY_PRESS_SURFACE_RIGHT];
-              render_surface();
+              store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_RIGHT]);
               break;
 
             case SDLK_p:
-              current_surface = png_surface;
-              render_surface();
+              store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_IMAGE]);
               break;
 
             case SDLK_t:
-              current_surface = png_surface;
-              render_texture();
+              store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_IMAGE]);
               break;
 
             case SDLK_g:
-              render_geometry();
+              //render_geometry();
               break;
 
             case SDLK_v:
-              render_viewport();
+              //render_viewport();
               break;
 
             default:
-              current_surface = key_press_surfaces[KEY_PRESS_SURFACE_DEFAULT];
+              store_p->window_p->render_surface(store_p->surfaces[KEY_PRESS_SURFACE_DEFAULT]);
               break;
           }
           break;
@@ -152,13 +132,7 @@ void game_loop() {
   }
 }
 
-void render_surface() {
-  // Apply the image
-  SDL_BlitSurface(current_surface, NULL, screen_surface, NULL);
-
-  // Update the surface
-  SDL_UpdateWindowSurface(screen_window);
-}
+/*
 
 void render_texture() {
   // Show texture for 5 seconds
@@ -265,4 +239,4 @@ void render_viewport() {
   SDL_RenderSetViewport(screen_renderer, &original_viewport);
 
   SDL_Delay(5000);
-}
+}*/

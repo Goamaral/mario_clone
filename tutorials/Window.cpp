@@ -1,34 +1,4 @@
-#ifndef SDL_H
-#define SDL_H
-#include <SDL2/SDL.h>
-#endif
-
-#ifndef SDL_IMAGE_H
-#define SDL_IMAGE_H
-#include <SDL2/SDL_image.h>
-#endif
-
-#ifndef STRING_H
-#define STRING_H
-#include <string>
-#endif
-
-class Window {
-  public:
-    Window(std::string, int, int);
-    ~Window();
-
-    SDL_Window* pointer = NULL;
-    SDL_Renderer* renderer_p = NULL;
-    SDL_Surface* surface_p = NULL;
-    bool loaded = false;
-
-    SDL_Renderer* loadRenderer();
-    void freeRenderer();
-
-    SDL_Surface* loadSurface();
-    void freeSurface();
-};
+#include "Window.hpp"
 
 Window::Window(std::string title, int width, int height) {
   // Window
@@ -68,20 +38,20 @@ SDL_Renderer* Window::loadRenderer() {
   return SDL_CreateRenderer(pointer, -1, SDL_RENDERER_ACCELERATED);
 }
 
-void Window::freeRenderer() {
-  if (renderer_p) SDL_DestroyRenderer(renderer_p);
-}
-
 SDL_Surface* Window::loadSurface() {
   return SDL_GetWindowSurface(pointer);
 }
 
-void Window::freeSurface() {
-  if (renderer_p) SDL_FreeSurface(surface_p);
+void Window::render_surface(SDL_Surface* surface_to_render_p) {
+  // Apply the image
+  SDL_BlitSurface(surface_to_render_p, NULL, surface_p, NULL);
+
+  // Update the surface
+  SDL_UpdateWindowSurface(pointer);
 }
 
 Window::~Window() {
+  if (surface_p) Surface::free(surface_p);
+  if (renderer_p) SDL_DestroyRenderer(renderer_p);
   if (pointer) SDL_DestroyWindow(pointer);
-  freeRenderer();
-  freeSurface();
 }

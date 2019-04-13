@@ -1,50 +1,15 @@
-#ifndef SDL_H
-#define SDL_H
-#include <SDL2/SDL.h>
-#endif
+#include "Texture.hpp"
 
-#ifndef STRING_H
-#define STRING_H
-#include <string>
-#endif
-
-#ifndef SDL_IMAGE_H
-#define SDL_IMAGE_H
-#include <SDL2/SDL_image.h>
-#endif
-
-#ifndef SDTIO_H
-#define SDTIO_H
-#include <cstdio>
-#endif
-
-#ifndef SURFACE_H
-#define SURFACE_H
-#include "Surface.cpp"
-#endif
-
-class Texture {
-  public:
-    Texture(SDL_Renderer* screen_renderer);
-    ~Texture();
-
-    int width = 0;
-    int height = 0;
-
-    static SDL_Texture* load(std::string, SDL_Renderer*);
-    bool loadFromFile(std::string path);
-    void render(int x, int y);
-    void free(std::string);
-
-  private:
-    SDL_Texture* texture = NULL;
-    SDL_Renderer* screen_renderer = NULL;
-};
-
-Texture::Texture(SDL_Renderer* screen_renderer) {
-  this->screen_renderer = screen_renderer;
+/***** CONSTRUCTOR *****/
+Texture::Texture() {
 }
 
+/***** DESTRUCTOR *****/
+Texture::~Texture() {
+
+}
+
+/***** STATIC *****/
 SDL_Texture* Texture::load(std::string resource_path, SDL_Renderer* renderer) {
   // Final texture
   SDL_Texture* new_texture;
@@ -61,15 +26,18 @@ SDL_Texture* Texture::load(std::string resource_path, SDL_Renderer* renderer) {
     }
 
     // Free surface
-    SDL_FreeSurface(loaded_surface);
+    Surface::free(loaded_surface);
   }
 
   return new_texture;
 }
 
-bool Texture::loadFromFile(std::string path) {
-  free();
+void Texture::free(SDL_Texture* texture_p) {
+  SDL_DestroyTexture(texture_p);
+}
 
+/***** METHODS *****/
+SDL_Texture* Texture::loadFromFile(std::string path, SDL_Renderer* renderer_p) {
   SDL_Texture* new_texture = NULL;
 
   SDL_Surface* loaded_surface = IMG_Load(path.c_str());
@@ -78,6 +46,8 @@ bool Texture::loadFromFile(std::string path) {
   } else {
     // Color key image
     SDL_SetColorKey(loaded_surface, SDL_TRUE, SDL_MapRGB(loaded_surface->format, 0, 0xFF, 0xFF ));
-    new_texture = SDL_CreateTextureFromSurface(screen_renderer, loaded_surface);
+    new_texture = SDL_CreateTextureFromSurface(renderer_p, loaded_surface);
   }
+
+  return new_texture;
 }
