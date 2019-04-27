@@ -55,3 +55,15 @@ Window::~Window() {
   if (renderer_p) SDL_DestroyRenderer(renderer_p);
   if (pointer) SDL_DestroyWindow(pointer);
 }
+
+void Window::set_viewport(SDL_Rect* viewport_p) {
+  SDL_RenderSetViewport(renderer_p, viewport_p);
+}
+
+void Window::render_texture(SDL_Texture* texture_p) {
+  SDL_RenderCopy(renderer_p, texture_p, NULL, NULL);
+}
+
+void Window::render_viewports() {
+  SDL_RenderPresent(renderer_p);
+}
