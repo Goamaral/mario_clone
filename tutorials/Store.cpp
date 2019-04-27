@@ -5,7 +5,8 @@ Store::Store(/* args */) {
 
 Store::~Store() {
   freeSurfaces();
-  Texture::free(screen_texture);
+  Texture::free(loading_texture_p);
+  Texture::free(viewport_texture_p);
   delete window_p;
 }
 
@@ -25,8 +26,10 @@ bool Store::load_media() {
 }
 
 bool Store::load_textures() {
-  screen_texture = Texture::load("resources/textures/texture.png", window_p->renderer_p);
-  if (!screen_texture) return false;
+  loading_texture_p = Texture::load("resources/textures/texture.png", window_p->renderer_p);
+  if (!loading_texture_p) return false;
+  viewport_texture_p = Texture::load("resources/textures/viewport.png", window_p->renderer_p);
+  if (!viewport_texture_p) return false;
 
   return true;
 }

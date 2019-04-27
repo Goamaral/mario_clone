@@ -22,7 +22,8 @@ class Store {
 
     Window* window_p = NULL;
     std::vector<SDL_Surface*> surfaces;
-    SDL_Texture* screen_texture;
+    SDL_Texture* loading_texture_p;
+    SDL_Texture* viewport_texture_p;
 
     bool init(const char *, int, int);
     bool load_media();

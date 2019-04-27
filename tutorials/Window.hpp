@@ -22,4 +22,7 @@ class Window {
     SDL_Renderer* loadRenderer();
     SDL_Surface* loadSurface();
     void render_surface(SDL_Surface*);
+    void set_viewport(SDL_Rect*);
+    void render_texture(SDL_Texture*);
+    void render_viewports();
 };
