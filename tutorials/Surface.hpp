@@ -6,7 +6,7 @@
 class Surface {
   private:
   public:
-    Surface(/* args */);
+    Surface();
     ~Surface();
 
     static SDL_Surface* loadOptimized(std::string, SDL_Surface*);

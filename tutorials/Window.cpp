@@ -1,14 +1,15 @@
 #include "Window.hpp"
 
+Window::Window() {}
+
 Window::Window(std::string title, int width, int height) {
-  // Window
-  pointer = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
+  p = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN
   );
 
-  if (pointer) {
+  if (p) {
     // Window Renderer
-    renderer_p = loadRenderer();
+    renderer_p = SDL_CreateRenderer(p, -1, SDL_RENDERER_ACCELERATED);
 
     // Initialize renderer color
     if (renderer_p)  {
@@ -18,10 +19,10 @@ Window::Window(std::string title, int width, int height) {
       int img_flags = IMG_INIT_PNG;
 
       if(!!(IMG_Init(img_flags) & img_flags)) {
-        // Get window surface
-        surface_p = loadSurface();
-
+        // Check window surface
+        surface_p = SDL_GetWindowSurface(p);
         if (surface_p) loaded = true;
+
       } else {
         printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
       }
@@ -34,12 +35,10 @@ Window::Window(std::string title, int width, int height) {
   }
 }
 
-SDL_Renderer* Window::loadRenderer() {
-  return SDL_CreateRenderer(pointer, -1, SDL_RENDERER_ACCELERATED);
-}
-
-SDL_Surface* Window::loadSurface() {
-  return SDL_GetWindowSurface(pointer);
+Window::~Window() {
+  if (surface_p) Surface::free(surface_p);
+  if (renderer_p) SDL_DestroyRenderer(renderer_p);
+  if (p) SDL_DestroyWindow(p);
 }
 
 void Window::render_surface(SDL_Surface* surface_to_render_p) {
@@ -47,21 +46,15 @@ void Window::render_surface(SDL_Surface* surface_to_render_p) {
   SDL_BlitSurface(surface_to_render_p, NULL, surface_p, NULL);
 
   // Update the surface
-  SDL_UpdateWindowSurface(pointer);
+  SDL_UpdateWindowSurface(p);
 }
 
-Window::~Window() {
-  if (surface_p) Surface::free(surface_p);
-  if (renderer_p) SDL_DestroyRenderer(renderer_p);
-  if (pointer) SDL_DestroyWindow(pointer);
+void Window::render_texture(SDL_Texture* texture_to_render_p) {
+  SDL_RenderCopy(renderer_p, texture_to_render_p, NULL, NULL);
 }
 
 void Window::set_viewport(SDL_Rect* viewport_p) {
   SDL_RenderSetViewport(renderer_p, viewport_p);
-}
-
-void Window::render_texture(SDL_Texture* texture_p) {
-  SDL_RenderCopy(renderer_p, texture_p, NULL, NULL);
 }
 
 void Window::render_viewports() {
