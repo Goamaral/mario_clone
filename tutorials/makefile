@@ -1,5 +1,5 @@
 build: main.cpp Window.cpp Surface.cpp Texture.cpp
-	g++ main.cpp Window.cpp Surface.cpp Texture.cpp -o main -lSDL2 -lSDL2_image
+	g++ main.cpp Window.cpp Surface.cpp Texture.cpp -o main -lSDL2 -lSDL2_image -Wall
 
-run:
+run: build
 	./main

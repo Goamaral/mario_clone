@@ -9,20 +9,17 @@
 #include "Surface.hpp"
 #endif
 
-class Window {
-  public:
-    Window();
-    Window(std::string, int, int);
-    ~Window();
-
-    void render_surface(SDL_Surface*);
-    void render_texture(SDL_Texture*);
-    void set_viewport(SDL_Rect*);
-    void render_viewports();
-
-    SDL_Window* p = NULL;
-    bool loaded = false;
-
-    SDL_Renderer* renderer_p = NULL;
-    SDL_Surface* surface_p = NULL;
+struct window_t {
+  SDL_Window* p = NULL;
+  SDL_Renderer* renderer_p = NULL;
+  SDL_Surface* surface_p = NULL;
 };
+
+extern window_t* global_window_p;
+
+bool window_init(std::string, int, int);
+void window_destroy();
+void window_render_surface(SDL_Surface*);
+void window_render_texture(SDL_Texture*);
+void window_set_viewport(SDL_Rect*);
+void window_render_viewports();

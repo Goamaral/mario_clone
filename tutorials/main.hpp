@@ -15,8 +15,6 @@
 #include "Texture.hpp"
 #endif
 
-Window window;
-
 std::unordered_map<int, SDL_Surface*> surfaces;
 enum {
   KEY_PRESS_SURFACE_DEFAULT,

@@ -25,20 +25,19 @@ bool init() {
   // Start SDL
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     printf("SDL could not initialize SDL_Error: %s\n", SDL_GetError());
+    return false;
   } else {
     // Create window
-    window = Window(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+    return window_init(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
   }
-
-  return window.loaded;
 }
 
 bool load_surface(int key, std::string resource_path) {
-  return surfaces[key] = Surface::loadOptimized(resource_path, window.surface_p);
+  return (surfaces[key] = surface_load_optimized(resource_path, global_window_p->surface_p)) != NULL;
 }
 
 bool load_texture(int key, std::string resource_path) {
-  return textures[key] = Texture::load(resource_path, window.renderer_p);
+  return (textures[key] = Texture::load(resource_path, global_window_p->renderer_p)) != NULL;
 }
 
 bool load_media() {
@@ -65,18 +64,18 @@ void run() {
     stretch_rect.y = 0;
     stretch_rect.w = WINDOW_WIDTH;
     stretch_rect.h = WINDOW_HEIGHT;
-    SDL_Surface* stretched_surface = Surface::loadOptimized("resources/surfaces/stretch.bmp", window.surface_p);
+    SDL_Surface* stretched_surface = surface_load_optimized("resources/surfaces/stretch.bmp", global_window_p->surface_p);
 
     // Apply the image
-    SDL_BlitScaled(stretched_surface, NULL, window.surface_p, &stretch_rect);
+    SDL_BlitScaled(stretched_surface, NULL, global_window_p->surface_p, &stretch_rect);
 
     // Update the surface
-    SDL_UpdateWindowSurface(window.p);
+    SDL_UpdateWindowSurface(global_window_p->p);
 
     // Wait 2 seconds
     SDL_Delay(2000);
 
-    Surface::free(stretched_surface);
+    surface_free(stretched_surface);
 
     game_loop();
   } else {
@@ -85,6 +84,7 @@ void run() {
 }
 
 void close() {
+  window_destroy();
   // Quit SDL subsystems
   IMG_Quit();
   SDL_Quit();
@@ -95,7 +95,7 @@ void game_loop() {
   SDL_Event ev;
 
   // Set default surface
-  window.render_surface(surfaces[KEY_PRESS_SURFACE_DEFAULT]);
+  window_render_surface(surfaces[KEY_PRESS_SURFACE_DEFAULT]);
 
   // While application is running
   while (true) {
@@ -110,27 +110,27 @@ void game_loop() {
           // Select surfaces based on key press
           switch(ev.key.keysym.sym) {
             case SDLK_UP:
-              window.render_surface(surfaces[KEY_PRESS_SURFACE_UP]);
+              window_render_surface(surfaces[KEY_PRESS_SURFACE_UP]);
               break;
 
             case SDLK_DOWN:
-              window.render_surface(surfaces[KEY_PRESS_SURFACE_DOWN]);
+              window_render_surface(surfaces[KEY_PRESS_SURFACE_DOWN]);
               break;
 
             case SDLK_LEFT:
-              window.render_surface(surfaces[KEY_PRESS_SURFACE_LEFT]);
+              window_render_surface(surfaces[KEY_PRESS_SURFACE_LEFT]);
               break;
 
             case SDLK_RIGHT:
-              window.render_surface(surfaces[KEY_PRESS_SURFACE_RIGHT]);
+              window_render_surface(surfaces[KEY_PRESS_SURFACE_RIGHT]);
               break;
 
             case SDLK_p:
-              window.render_surface(surfaces[KEY_PRESS_SURFACE_IMAGE]);
+              window_render_surface(surfaces[KEY_PRESS_SURFACE_IMAGE]);
               break;
 
             case SDLK_t:
-              window.render_surface(surfaces[KEY_PRESS_SURFACE_IMAGE]);
+              window_render_surface(surfaces[KEY_PRESS_SURFACE_IMAGE]);
               break;
 
             case SDLK_g:
@@ -144,8 +144,8 @@ void game_loop() {
               top_left_viewport.y = 0;
               top_left_viewport.w = WINDOW_WIDTH / 2;
               top_left_viewport.h = WINDOW_HEIGHT / 2;
-              window.set_viewport(&top_left_viewport);
-              window.render_texture(textures[VIEWPORT_TEXTURE]);
+              window_set_viewport(&top_left_viewport);
+              window_render_texture(textures[VIEWPORT_TEXTURE]);
 
               // Top Right
               SDL_Rect top_right_viewport;
@@ -153,8 +153,8 @@ void game_loop() {
               top_right_viewport.y = 0;
               top_right_viewport.w = WINDOW_WIDTH / 2;
               top_right_viewport.h = WINDOW_HEIGHT / 2;
-              window.set_viewport(&top_right_viewport);
-              window.render_texture(textures[VIEWPORT_TEXTURE]);
+              window_set_viewport(&top_right_viewport);
+              window_render_texture(textures[VIEWPORT_TEXTURE]);
 
               // Bottom
               SDL_Rect bottom_viewport;
@@ -162,14 +162,14 @@ void game_loop() {
               bottom_viewport.y = WINDOW_HEIGHT / 2;
               bottom_viewport.w = WINDOW_WIDTH;
               bottom_viewport.h = WINDOW_HEIGHT / 2;
-              window.set_viewport(&bottom_viewport);
-              window.render_texture(textures[VIEWPORT_TEXTURE]);
+              window_set_viewport(&bottom_viewport);
+              window_render_texture(textures[VIEWPORT_TEXTURE]);
 
-              window.render_viewports();
+              window_render_viewports();
               break;
 
             default:
-              window.render_surface(surfaces[KEY_PRESS_SURFACE_DEFAULT]);
+              window_render_surface(surfaces[KEY_PRESS_SURFACE_DEFAULT]);
               break;
           }
           break;

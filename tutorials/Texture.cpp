@@ -15,7 +15,7 @@ SDL_Texture* Texture::load(std::string resource_path, SDL_Renderer* renderer) {
   SDL_Texture* new_texture;
 
   // Load texture image
-  SDL_Surface* loaded_surface = Surface::loadFromImage(resource_path);
+  SDL_Surface* loaded_surface = surface_load_from_image(resource_path);
 
   if (loaded_surface) {
     // Create texture from surface pixels
@@ -26,7 +26,7 @@ SDL_Texture* Texture::load(std::string resource_path, SDL_Renderer* renderer) {
     }
 
     // Free surface
-    Surface::free(loaded_surface);
+    surface_free(loaded_surface);
   }
 
   return new_texture;
