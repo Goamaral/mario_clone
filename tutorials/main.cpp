@@ -10,11 +10,6 @@
 
 #include "main.hpp"
 
-// Screen dimension constants
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
-#define WINDOW_TITLE "SDL Tutorial"
-
 int main(int argc, char **args) {
   if (init()) run(); else printf("Failed to initialize!\n");
   close();
@@ -109,6 +104,8 @@ void game_loop() {
         case SDL_KEYDOWN:
           // Select surfaces based on key press
           switch(ev.key.keysym.sym) {
+            case SDLK_ESCAPE:
+              return;
             case SDLK_UP:
               window_render_surface(surfaces[KEY_PRESS_SURFACE_UP]);
               break;
@@ -129,15 +126,34 @@ void game_loop() {
               window_render_surface(surfaces[KEY_PRESS_SURFACE_IMAGE]);
               break;
 
-            case SDLK_t:
-              window_render_surface(surfaces[KEY_PRESS_SURFACE_IMAGE]);
-              break;
+            case SDLK_g: {
+              window_reset_renderer();
 
-            case SDLK_g:
-              //render_geometry();
-              break;
+              // Render red filled quad
+              SDL_Rect fill_rect = { WINDOW_WIDTH / 4, WINDOW_HEIGHT / 4, WINDOW_WIDTH / 2, WINDOW_WIDTH / 2 };
+              window_set_renderer_color(0xFF, 0x00, 0x00, 0xFF);
+              window_add_geo_rect(&fill_rect);
 
-            case SDLK_v:
+              // Render green outlined quad
+              SDL_Rect outline_rect = { WINDOW_WIDTH / 6, WINDOW_HEIGHT / 6, WINDOW_WIDTH * 2 / 3, WINDOW_HEIGHT * 2 / 3 };
+              window_set_renderer_color(0x00, 0xFF, 0x00, 0xFF);
+              window_add_geo_rect(&outline_rect);
+
+              // Draw blue horizontal line
+              window_set_renderer_color(0x00, 0x00, 0xFF, 0xFF);
+              window_add_geo_line(0, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT / 2);
+
+              // Draw vertical line of yellow dots
+              window_set_renderer_color(0xFF, 0xFF, 0x00, 0xFF);
+              for(int i = 0; i < WINDOW_HEIGHT; i += 4) window_add_geo_point(WINDOW_WIDTH / 2, i);
+
+              window_render_renderer();
+              break;
+            }
+
+            case SDLK_t: {
+              window_reset_renderer();
+
               // Top Left
               SDL_Rect top_left_viewport;
               top_left_viewport.x = 0;
@@ -165,8 +181,9 @@ void game_loop() {
               window_set_viewport(&bottom_viewport);
               window_render_texture(textures[VIEWPORT_TEXTURE]);
 
-              window_render_viewports();
+              window_render_renderer();
               break;
+            }
 
             default:
               window_render_surface(surfaces[KEY_PRESS_SURFACE_DEFAULT]);

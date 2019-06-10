@@ -62,6 +62,29 @@ void window_set_viewport(SDL_Rect* viewport_p) {
   SDL_RenderSetViewport(global_window_p->renderer_p, viewport_p);
 }
 
-void window_render_viewports() {
+void window_reset_renderer() {
+  window_set_renderer_color(0x00, 0x00, 0x00, 0x00);
+  SDL_Rect rect = { 0, 0 , WINDOW_WIDTH, WINDOW_WIDTH };
+  window_set_viewport(&rect);
+  SDL_RenderClear(global_window_p->renderer_p);
+}
+
+void window_render_renderer() {
   SDL_RenderPresent(global_window_p->renderer_p);
+}
+
+void window_set_renderer_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+  SDL_SetRenderDrawColor(global_window_p->renderer_p, r, g, b, a);
+}
+
+void window_add_geo_rect(SDL_Rect* rect_p) {
+  SDL_RenderFillRect(global_window_p->renderer_p, rect_p);
+}
+
+void window_add_geo_line(int x1, int y1, int x2, int y2) {
+  SDL_RenderDrawLine(global_window_p->renderer_p, x1, y1, x2, y2);
+}
+
+void window_add_geo_point(int x, int y) {
+  SDL_RenderDrawPoint(global_window_p->renderer_p, x, y);
 }
