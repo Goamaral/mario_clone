@@ -9,6 +9,11 @@
 #include "Surface.hpp"
 #endif
 
+#ifndef TEXTURE_H
+#define TEXTURE_H
+#include "Texture.hpp"
+#endif
+
 // Screen dimension constants
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -25,7 +30,7 @@ extern window_t* global_window_p;
 bool window_init(std::string, int, int);
 void window_destroy();
 void window_render_surface(SDL_Surface*);
-void window_render_texture(SDL_Texture*);
+void window_render_texture(texture_t*, int, int);
 void window_set_viewport(SDL_Rect*);
 void window_reset_renderer();
 void window_render_renderer();

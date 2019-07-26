@@ -22,20 +22,22 @@ enum {
   KEY_PRESS_SURFACE_DOWN,
   KEY_PRESS_SURFACE_LEFT,
   KEY_PRESS_SURFACE_RIGHT,
-  KEY_PRESS_SURFACE_IMAGE,
-  KEY_PRESS_SURFACE_TOTAL
+  KEY_PRESS_SURFACE_IMAGE
 };
 
-std::unordered_map<int, SDL_Texture*> textures;
+std::unordered_map<int, texture_t*> textures;
 enum {
   LOADING_TEXTURE,
-  VIEWPORT_TEXTURE
+  VIEWPORT_TEXTURE,
+  COMPOSITE_BACKGROUND_TEXTURE,
+  COMPOSITE_PLAYER_TEXTURE
 };
 
 int main(int, char**);
 bool init();
 bool load_surface(int, std::string);
 bool load_texture(int, std::string);
+bool load_texture_color_keying(int key, std::string resource_path, int r, int g, int b);
 bool load_media();
 void run();
 void close();

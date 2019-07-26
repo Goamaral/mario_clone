@@ -26,12 +26,12 @@ SDL_Surface* surface_load_from_image(std::string image_location) {
   SDL_Surface* loaded_surface = IMG_Load(image_location.c_str());
 
   if (!loaded_surface) {
-  printf("Failed to load image %s SDL Error: %s\n", image_location.c_str(), IMG_GetError());
+    printf("Failed to load image %s SDL Error: %s\n", image_location.c_str(), IMG_GetError());
   }
 
   return loaded_surface;
 }
 
 void surface_free(SDL_Surface* surface_p) {
-  SDL_FreeSurface(surface_p);
+  if (surface_p) SDL_FreeSurface(surface_p);
 }

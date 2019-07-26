@@ -7,6 +7,7 @@
 // 07_texture_loading_and_rendering
 // 08_geometry_rendering
 // 09_the_viewport
+// 10_color_keying
 
 #include "main.hpp"
 
@@ -32,7 +33,11 @@ bool load_surface(int key, std::string resource_path) {
 }
 
 bool load_texture(int key, std::string resource_path) {
-  return (textures[key] = Texture::load(resource_path, global_window_p->renderer_p)) != NULL;
+  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p))->loaded;
+}
+
+bool load_texture_color_keying(int key, std::string resource_path, int r, int g, int b) {
+  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p, true, r, g, b))->loaded;
 }
 
 bool load_media() {
@@ -47,6 +52,8 @@ bool load_media() {
   // Load textures
   if (!load_texture(LOADING_TEXTURE, "resources/textures/texture.png")) return false;
   if (!load_texture(VIEWPORT_TEXTURE, "resources/textures/viewport.png")) return false;
+  if (!load_texture(COMPOSITE_BACKGROUND_TEXTURE, "resources/textures/background.png")) return false;
+  if (!load_texture_color_keying(COMPOSITE_PLAYER_TEXTURE, "resources/textures/player.png", 0, 0XFF, 0XFF)) return false;
 
   return true;
 }
@@ -154,32 +161,46 @@ void game_loop() {
             case SDLK_t: {
               window_reset_renderer();
 
+              texture_t* texture_p = textures[VIEWPORT_TEXTURE];
+              int old_width = texture_p->width;
+              int old_height = texture_p->width;
+
               // Top Left
-              SDL_Rect top_left_viewport;
-              top_left_viewport.x = 0;
-              top_left_viewport.y = 0;
-              top_left_viewport.w = WINDOW_WIDTH / 2;
-              top_left_viewport.h = WINDOW_HEIGHT / 2;
-              window_set_viewport(&top_left_viewport);
-              window_render_texture(textures[VIEWPORT_TEXTURE]);
+              texture_p->width = WINDOW_WIDTH / 2;
+              texture_p->height = WINDOW_HEIGHT / 2;
+              window_render_texture(texture_p, 0, 0);
 
               // Top Right
-              SDL_Rect top_right_viewport;
-              top_right_viewport.x = WINDOW_WIDTH / 2;
-              top_right_viewport.y = 0;
-              top_right_viewport.w = WINDOW_WIDTH / 2;
-              top_right_viewport.h = WINDOW_HEIGHT / 2;
-              window_set_viewport(&top_right_viewport);
-              window_render_texture(textures[VIEWPORT_TEXTURE]);
+              window_render_texture(texture_p, WINDOW_WIDTH / 2, 0);
 
               // Bottom
-              SDL_Rect bottom_viewport;
-              bottom_viewport.x = 0;
-              bottom_viewport.y = WINDOW_HEIGHT / 2;
-              bottom_viewport.w = WINDOW_WIDTH;
-              bottom_viewport.h = WINDOW_HEIGHT / 2;
-              window_set_viewport(&bottom_viewport);
-              window_render_texture(textures[VIEWPORT_TEXTURE]);
+              texture_p->width = WINDOW_WIDTH;
+              texture_p->height = WINDOW_HEIGHT / 2;
+              window_render_texture(texture_p, 0, WINDOW_HEIGHT / 2);
+
+              texture_p->width = old_width;
+              texture_p->height = old_height;
+
+              window_render_renderer();
+              break;
+            }
+
+            case SDLK_c: {
+              window_reset_renderer();
+
+              texture_t* player_texture_p = textures[COMPOSITE_PLAYER_TEXTURE];
+              texture_t* background_texture_p = textures[COMPOSITE_BACKGROUND_TEXTURE];
+
+              int old_background_width = background_texture_p->width;
+              int old_background_height = background_texture_p->height;
+
+              background_texture_p->width = WINDOW_WIDTH;
+              background_texture_p->height = WINDOW_HEIGHT;
+              window_render_texture(background_texture_p, 0, 0);
+              window_render_texture(player_texture_p, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+
+              background_texture_p->width = old_background_width;
+              background_texture_p->height = old_background_height;
 
               window_render_renderer();
               break;

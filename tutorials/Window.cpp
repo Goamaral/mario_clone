@@ -54,8 +54,9 @@ void window_render_surface(SDL_Surface* surface_to_render_p) {
   SDL_UpdateWindowSurface(global_window_p->p);
 }
 
-void window_render_texture(SDL_Texture* texture_to_render_p) {
-  SDL_RenderCopy(global_window_p->renderer_p, texture_to_render_p, NULL, NULL);
+void window_render_texture(texture_t* texture_p, int x, int y) {
+  SDL_Rect render_area = { x, y, texture_p->width, texture_p->height };
+  SDL_RenderCopy(global_window_p->renderer_p, texture_p->p, NULL, &render_area);
 }
 
 void window_set_viewport(SDL_Rect* viewport_p) {
