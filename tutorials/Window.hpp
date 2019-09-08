@@ -30,7 +30,7 @@ extern window_t* global_window_p;
 bool window_init(std::string, int, int);
 void window_destroy();
 void window_render_surface(SDL_Surface*);
-void window_render_texture(texture_t*, int, int);
+void window_render_texture(texture_t*, SDL_Rect, SDL_Rect = SDL_Rect());
 void window_set_viewport(SDL_Rect*);
 void window_reset_renderer();
 void window_render_renderer();

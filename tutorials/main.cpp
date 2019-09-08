@@ -8,6 +8,7 @@
 // 08_geometry_rendering
 // 09_the_viewport
 // 10_color_keying
+// 11_clip_rendering_and_sprite_sheets
 
 #include "main.hpp"
 
@@ -129,10 +130,12 @@ void game_loop() {
               window_render_surface(surfaces[KEY_PRESS_SURFACE_RIGHT]);
               break;
 
+            // PNG
             case SDLK_p:
               window_render_surface(surfaces[KEY_PRESS_SURFACE_IMAGE]);
               break;
 
+            // Geometry
             case SDLK_g: {
               window_reset_renderer();
 
@@ -158,49 +161,39 @@ void game_loop() {
               break;
             }
 
+            // Texture at Viewport
+            // Texture Clipping
             case SDLK_t: {
               window_reset_renderer();
 
               texture_t* texture_p = textures[VIEWPORT_TEXTURE];
-              int old_width = texture_p->width;
-              int old_height = texture_p->width;
 
               // Top Left
-              texture_p->width = WINDOW_WIDTH / 2;
-              texture_p->height = WINDOW_HEIGHT / 2;
-              window_render_texture(texture_p, 0, 0);
+              window_render_texture(texture_p, { 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 });
 
               // Top Right
-              window_render_texture(texture_p, WINDOW_WIDTH / 2, 0);
+              window_render_texture(texture_p, { WINDOW_WIDTH / 2, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 });
 
               // Bottom
-              texture_p->width = WINDOW_WIDTH;
-              texture_p->height = WINDOW_HEIGHT / 2;
-              window_render_texture(texture_p, 0, WINDOW_HEIGHT / 2);
-
-              texture_p->width = old_width;
-              texture_p->height = old_height;
+              window_render_texture(
+                texture_p,
+                { 0, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT / 2 },
+                { 0, 0, texture_p->width / 2, texture_p->height }
+              );
 
               window_render_renderer();
               break;
             }
 
+            // Color Keying
             case SDLK_c: {
               window_reset_renderer();
 
               texture_t* player_texture_p = textures[COMPOSITE_PLAYER_TEXTURE];
               texture_t* background_texture_p = textures[COMPOSITE_BACKGROUND_TEXTURE];
 
-              int old_background_width = background_texture_p->width;
-              int old_background_height = background_texture_p->height;
-
-              background_texture_p->width = WINDOW_WIDTH;
-              background_texture_p->height = WINDOW_HEIGHT;
-              window_render_texture(background_texture_p, 0, 0);
-              window_render_texture(player_texture_p, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-
-              background_texture_p->width = old_background_width;
-              background_texture_p->height = old_background_height;
+              window_render_texture(background_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
+              window_render_texture(player_texture_p, { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 });
 
               window_render_renderer();
               break;
