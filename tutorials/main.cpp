@@ -9,6 +9,7 @@
 // 09_the_viewport
 // 10_color_keying
 // 11_clip_rendering_and_sprite_sheets
+// 12_color_modulation
 
 #include "main.hpp"
 
@@ -37,8 +38,12 @@ bool load_texture(int key, std::string resource_path) {
   return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p))->loaded;
 }
 
-bool load_texture_color_keying(int key, std::string resource_path, int r, int g, int b) {
-  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p, true, r, g, b))->loaded;
+bool load_texture_color_keying(int key, std::string resource_path, Uint8 r, Uint8 g, Uint8 b) {
+  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p, TextureColorMode::COLOR_KEYING, r, g, b))->loaded;
+}
+
+bool load_texture_color_modulation(int key, std::string resource_path, Uint8 r, Uint8 g, Uint8 b) {
+  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p, TextureColorMode::COLOR_MODULATION, r, g, b))->loaded;
 }
 
 bool load_media() {
@@ -53,9 +58,9 @@ bool load_media() {
   // Load textures
   if (!load_texture(LOADING_TEXTURE, "resources/textures/texture.png")) return false;
   if (!load_texture(VIEWPORT_TEXTURE, "resources/textures/viewport.png")) return false;
-  if (!load_texture(COMPOSITE_BACKGROUND_TEXTURE, "resources/textures/background.png")) return false;
-  if (!load_texture_color_keying(COMPOSITE_PLAYER_TEXTURE, "resources/textures/player.png", 0, 0XFF, 0XFF)) return false;
-
+  if (!load_texture(BACKGROUND_TEXTURE, "resources/textures/background.png")) return false;
+  if (!load_texture_color_keying(PLAYER_TEXTURE, "resources/textures/player.png", 0x00, 0xFF, 0xFF)) return false;
+  if (!load_texture_color_modulation(COLOR_MODULATION_TEXTURE, "resources/textures/colors.png", 0xFF, 0xA0, 0xFF)) return false;
   return true;
 }
 
@@ -189,11 +194,23 @@ void game_loop() {
             case SDLK_c: {
               window_reset_renderer();
 
-              texture_t* player_texture_p = textures[COMPOSITE_PLAYER_TEXTURE];
-              texture_t* background_texture_p = textures[COMPOSITE_BACKGROUND_TEXTURE];
+              texture_t* player_texture_p = textures[PLAYER_TEXTURE];
+              texture_t* background_texture_p = textures[BACKGROUND_TEXTURE];
 
               window_render_texture(background_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
               window_render_texture(player_texture_p, { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 });
+
+              window_render_renderer();
+              break;
+            }
+
+            // Color modulation
+            case SDLK_m: {
+              window_reset_renderer();
+
+              texture_t* colors_texture_p = textures[COLOR_MODULATION_TEXTURE];
+
+              window_render_texture(colors_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
 
               window_render_renderer();
               break;

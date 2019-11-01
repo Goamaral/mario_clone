@@ -9,6 +9,12 @@
 #include "Surface.hpp"
 #endif
 
+enum class TextureColorMode {
+  NONE,
+  COLOR_KEYING,
+  COLOR_MODULATION
+};
+
 struct texture_t {
   SDL_Texture* p = NULL;
   int width = 0;
@@ -19,5 +25,5 @@ struct texture_t {
   ~texture_t();
 };
 
-texture_t* texture_load_from_file(std::string, SDL_Renderer*, bool = false, int = 255, int = 255, int = 255);
+texture_t* texture_load_from_file(std::string, SDL_Renderer*, TextureColorMode = TextureColorMode::NONE, Uint8 = 0xFF, Uint8 = 0xFF, Uint8 = 0xFF);
 void texture_free(SDL_Texture*);

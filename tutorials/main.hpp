@@ -29,15 +29,17 @@ std::unordered_map<int, texture_t*> textures;
 enum {
   LOADING_TEXTURE,
   VIEWPORT_TEXTURE,
-  COMPOSITE_BACKGROUND_TEXTURE,
-  COMPOSITE_PLAYER_TEXTURE
+  BACKGROUND_TEXTURE,
+  PLAYER_TEXTURE,
+  COLOR_MODULATION_TEXTURE
 };
 
 int main(int, char**);
 bool init();
 bool load_surface(int, std::string);
 bool load_texture(int, std::string);
-bool load_texture_color_keying(int key, std::string resource_path, int r, int g, int b);
+bool load_texture_color_keying(int, std::string, Uint8, Uint8, Uint8);
+bool load_texture_color_modulation(int, std::string, Uint8, Uint8, Uint8);
 bool load_media();
 void run();
 void close();
