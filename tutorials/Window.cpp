@@ -54,13 +54,13 @@ void window_render_surface(SDL_Surface* surface_to_render_p) {
   SDL_UpdateWindowSurface(global_window_p->p);
 }
 
-void window_render_texture(texture_t* texture_p, SDL_Rect render_area, SDL_Rect clipping_area) {
+void window_render_texture(Texture* texture_p, SDL_Rect render_area, SDL_Rect clipping_area) {
   if (render_area.w <= 0) render_area.w = texture_p->width;
   if (render_area.h <= 0) render_area.h = texture_p->height;
   if (clipping_area.w <= 0) clipping_area.w = texture_p->width;
   if (clipping_area.h <= 0) clipping_area.h = texture_p->height;
 
-  SDL_RenderCopy(global_window_p->renderer_p, texture_p->p, &clipping_area, &render_area);
+  SDL_RenderCopy(global_window_p->renderer_p, texture_p->pointer, &clipping_area, &render_area);
 }
 
 void window_set_viewport(SDL_Rect* viewport_p) {

@@ -34,16 +34,8 @@ bool load_surface(int key, std::string resource_path) {
   return (surfaces[key] = surface_load_optimized(resource_path, global_window_p->surface_p)) != NULL;
 }
 
-bool load_texture(int key, std::string resource_path) {
-  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p))->loaded;
-}
-
-bool load_texture_color_keying(int key, std::string resource_path, Uint8 r, Uint8 g, Uint8 b) {
-  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p, TextureColorMode::COLOR_KEYING, r, g, b))->loaded;
-}
-
-bool load_texture_color_modulation(int key, std::string resource_path, Uint8 r, Uint8 g, Uint8 b) {
-  return (textures[key] = texture_load_from_file(resource_path, global_window_p->renderer_p, TextureColorMode::COLOR_MODULATION, r, g, b))->loaded;
+bool load_texture(int key, std::string resource_path, Uint8 r, Uint8 g, Uint8 b) {
+  return textures[key].load_from_file(resource_path, global_window_p->renderer_p);
 }
 
 bool load_media() {
@@ -56,11 +48,14 @@ bool load_media() {
   if (!load_surface(KEY_PRESS_SURFACE_IMAGE, "resources/surfaces/image.png")) return false;
 
   // Load textures
-  if (!load_texture(LOADING_TEXTURE, "resources/textures/texture.png")) return false;
   if (!load_texture(VIEWPORT_TEXTURE, "resources/textures/viewport.png")) return false;
   if (!load_texture(BACKGROUND_TEXTURE, "resources/textures/background.png")) return false;
-  if (!load_texture_color_keying(PLAYER_TEXTURE, "resources/textures/player.png", 0x00, 0xFF, 0xFF)) return false;
-  if (!load_texture_color_modulation(COLOR_MODULATION_TEXTURE, "resources/textures/colors.png", 0xFF, 0xA0, 0xFF)) return false;
+  if (!load_texture(PLAYER_TEXTURE, "resources/textures/player.png", 0x00, 0xFF, 0xFF)) return false;
+  if (!load_texture(COLOR_MODULATION_TEXTURE, "resources/textures/colors.png")) return false;
+
+  // Apply modulations
+  textures[COLOR_MODULATION_TEXTURE].set_color(0xFF, 0xA0, 0xFF);
+
   return true;
 }
 
@@ -92,6 +87,7 @@ void run() {
 }
 
 void close() {
+
   window_destroy();
   // Quit SDL subsystems
   IMG_Quit();
@@ -171,7 +167,7 @@ void game_loop() {
             case SDLK_t: {
               window_reset_renderer();
 
-              texture_t* texture_p = textures[VIEWPORT_TEXTURE];
+              Texture* texture_p = &textures[VIEWPORT_TEXTURE];
 
               // Top Left
               window_render_texture(texture_p, { 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 });
@@ -194,8 +190,8 @@ void game_loop() {
             case SDLK_c: {
               window_reset_renderer();
 
-              texture_t* player_texture_p = textures[PLAYER_TEXTURE];
-              texture_t* background_texture_p = textures[BACKGROUND_TEXTURE];
+              Texture* player_texture_p = &textures[PLAYER_TEXTURE];
+              Texture* background_texture_p = &textures[BACKGROUND_TEXTURE];
 
               window_render_texture(background_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
               window_render_texture(player_texture_p, { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 });
@@ -208,7 +204,7 @@ void game_loop() {
             case SDLK_m: {
               window_reset_renderer();
 
-              texture_t* colors_texture_p = textures[COLOR_MODULATION_TEXTURE];
+              Texture* colors_texture_p = &textures[COLOR_MODULATION_TEXTURE];
 
               window_render_texture(colors_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
 

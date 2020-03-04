@@ -9,21 +9,27 @@
 #include "Surface.hpp"
 #endif
 
-enum class TextureColorMode {
-  NONE,
-  COLOR_KEYING,
-  COLOR_MODULATION
+class Texture {
+  public:
+      SDL_Texture* pointer;
+      int width;
+      int height;
+
+      Texture();
+      ~Texture();
+
+      //Loads image at specified path
+      bool load_from_file(std::string, SDL_Renderer*, Uint8 = 0x00, Uint8 = 0x00, Uint8 = 0x00);
+
+      // Deallocates texture
+      void free();
+
+      // Set color modulation
+      void set_color(Uint8, Uint8, Uint8);
+
+      // Set blending
+      void set_blend_mode(SDL_BlendMode);
+
+      // Set alpha modulation
+      void set_alpha(Uint8);
 };
-
-struct texture_t {
-  SDL_Texture* p = NULL;
-  int width = 0;
-  int height = 0;
-  bool loaded = false;
-
-  texture_t(SDL_Texture* = NULL, int = 0, int = 0);
-  ~texture_t();
-};
-
-texture_t* texture_load_from_file(std::string, SDL_Renderer*, TextureColorMode = TextureColorMode::NONE, Uint8 = 0xFF, Uint8 = 0xFF, Uint8 = 0xFF);
-void texture_free(SDL_Texture*);
