@@ -10,6 +10,7 @@
 // 10_color_keying
 // 11_clip_rendering_and_sprite_sheets
 // 12_color_modulation
+// 13_alpha_blending
 
 #include "main.hpp"
 
@@ -34,10 +35,6 @@ bool load_surface(int key, std::string resource_path) {
   return (surfaces[key] = surface_load_optimized(resource_path, global_window_p->surface_p)) != NULL;
 }
 
-bool load_texture(int key, std::string resource_path, Uint8 r, Uint8 g, Uint8 b) {
-  return textures[key].load_from_file(resource_path, global_window_p->renderer_p);
-}
-
 bool load_media() {
   // Load surfaces
   if (!load_surface(KEY_PRESS_SURFACE_DEFAULT, "resources/surfaces/default.bmp")) return false;
@@ -48,13 +45,15 @@ bool load_media() {
   if (!load_surface(KEY_PRESS_SURFACE_IMAGE, "resources/surfaces/image.png")) return false;
 
   // Load textures
-  if (!load_texture(VIEWPORT_TEXTURE, "resources/textures/viewport.png")) return false;
-  if (!load_texture(BACKGROUND_TEXTURE, "resources/textures/background.png")) return false;
-  if (!load_texture(PLAYER_TEXTURE, "resources/textures/player.png", 0x00, 0xFF, 0xFF)) return false;
-  if (!load_texture(COLOR_MODULATION_TEXTURE, "resources/textures/colors.png")) return false;
+  if (!textures[VIEWPORT_TEXTURE].load_from_file("resources/textures/viewport.png", global_window_p->renderer_p)) return false;
+  if (!textures[BACKGROUND_TEXTURE].load_from_file("resources/textures/background.png", global_window_p->renderer_p)) return false;
+  if (!textures[PLAYER_TEXTURE].load_from_file("resources/textures/player.png", global_window_p->renderer_p, 0x00, 0xFF, 0xFF)) return false;
+  if (!textures[COLOR_MODULATION_TEXTURE].load_from_file("resources/textures/colors.png", global_window_p->renderer_p)) return false;
+  if (!textures[ALPHA_BLENDING_TEXTURE].load_from_file("resources/textures/alpha.png", global_window_p->renderer_p)) return false;
 
-  // Apply modulations
-  textures[COLOR_MODULATION_TEXTURE].set_color(0xFF, 0xA0, 0xFF);
+  textures[COLOR_MODULATION_TEXTURE].set_modulation_color(0xFF, 0xA0, 0xFF);
+  textures[ALPHA_BLENDING_TEXTURE].set_blend_mode(SDL_BLENDMODE_BLEND);
+  textures[ALPHA_BLENDING_TEXTURE].set_alpha(0xD0);
 
   return true;
 }
@@ -87,7 +86,6 @@ void run() {
 }
 
 void close() {
-
   window_destroy();
   // Quit SDL subsystems
   IMG_Quit();
@@ -208,6 +206,20 @@ void game_loop() {
 
               window_render_texture(colors_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
 
+              window_render_renderer();
+              break;
+            }
+
+            // Alpha blending
+            case SDLK_a: {
+              window_reset_renderer();
+
+              Texture* background_texture_p = &textures[BACKGROUND_TEXTURE];
+              Texture* alpha_blending_texture_p = &textures[ALPHA_BLENDING_TEXTURE];
+
+              window_render_texture(background_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
+              window_render_texture(alpha_blending_texture_p, { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT });
+              
               window_render_renderer();
               break;
             }

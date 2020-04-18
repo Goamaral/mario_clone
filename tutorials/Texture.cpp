@@ -48,7 +48,7 @@ void Texture::free() {
 }
 
 // Set color modulation
-void Texture::set_color(Uint8 r, Uint8 g, Uint8 b) {
+void Texture::set_modulation_color(Uint8 r, Uint8 g, Uint8 b) {
   SDL_SetTextureColorMod(pointer, r, g, b);
 }
 

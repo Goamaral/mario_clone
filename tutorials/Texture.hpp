@@ -24,10 +24,10 @@ class Texture {
       // Deallocates texture
       void free();
 
-      // Set color modulation
-      void set_color(Uint8, Uint8, Uint8);
+      // Set modulation color
+      void set_modulation_color(Uint8, Uint8, Uint8);
 
-      // Set blending
+      // Set blending mode
       void set_blend_mode(SDL_BlendMode);
 
       // Set alpha modulation
