@@ -7,10 +7,12 @@ Window::Window() {
 }
 
 Window::~Window() {
-  if ($sdl_surface_p) SDL_FreeSurface($sdl_surface_p); // FUTURE: Surface class
+  if ($sdl_surface_p) {
+    SDL_FreeSurface($sdl_surface_p); // FUTURE: Surface class
+    IMG_Quit();
+  }
   if ($sdl_renderer_p) SDL_DestroyRenderer($sdl_renderer_p);// FUTURE: Renderer class
   if ($sdl_p) SDL_DestroyWindow($sdl_p);
-  IMG_Quit();
 }
 
 bool Window::init(std::string title, int width, int height) {
@@ -43,7 +45,7 @@ bool Window::init(std::string title, int width, int height) {
 
   // Check window surface
   $sdl_surface_p = SDL_GetWindowSurface($sdl_p); // FUTURE: Surface class
-  
+
   return $sdl_surface_p != NULL;
 }
 

@@ -13,7 +13,7 @@ int main(int argc, char** args) {
 
 void run() {
   Window window;
-  window.init(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+  window.init(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT); // FUTURE: Write to STDERR if false returned
 
   SDL_Surface* sld_surface_p = SDL_LoadBMP("resources/surfaces/hello_world.bmp");
   if (sld_surface_p == NULL) {

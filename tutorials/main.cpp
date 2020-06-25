@@ -113,6 +113,7 @@ void game_loop() {
           switch(ev.key.keysym.sym) {
             case SDLK_ESCAPE:
               return;
+
             case SDLK_UP:
               window_render_surface(surfaces[KEY_PRESS_SURFACE_UP]);
               break;
