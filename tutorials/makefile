@@ -8,3 +8,6 @@ main: main.cpp Window.cpp Surface.cpp Texture.cpp
 
 03: 03_event_driven_programming.cpp NewWindow.cpp
 	g++ 03_event_driven_programming.cpp NewWindow.cpp -o 03 -lSDL2 -lSDL2_image -Wall
+
+14: 14_animated_sprites_and_vsync.cpp
+	g++ 14_animated_sprites_and_vsync.cpp -o 14 -lSDL2 -lSDL2_image -Wall

@@ -18,7 +18,7 @@ class Texture {
       Texture();
       ~Texture();
 
-      //Loads image at specified path
+      // Loads image at specified path
       bool load_from_file(std::string, SDL_Renderer*, Uint8 = 0x00, Uint8 = 0x00, Uint8 = 0x00);
 
       // Deallocates texture

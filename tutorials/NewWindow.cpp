@@ -7,12 +7,10 @@ Window::Window() {
 }
 
 Window::~Window() {
-  if ($sdl_surface_p) {
-    SDL_FreeSurface($sdl_surface_p); // FUTURE: Surface class
-    IMG_Quit();
-  }
+  if ($sdl_surface_p) SDL_FreeSurface($sdl_surface_p); // FUTURE: Surface class
   if ($sdl_renderer_p) SDL_DestroyRenderer($sdl_renderer_p);// FUTURE: Renderer class
   if ($sdl_p) SDL_DestroyWindow($sdl_p);
+  IMG_Quit();
 }
 
 bool Window::init(std::string title, int width, int height) {
@@ -26,7 +24,7 @@ bool Window::init(std::string title, int width, int height) {
     return false;
   }
 
-  $sdl_renderer_p = SDL_CreateRenderer($sdl_p, -1, SDL_RENDERER_ACCELERATED); // FUTURE: Renderer class
+  $sdl_renderer_p = SDL_CreateRenderer($sdl_p, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); // FUTURE: Renderer class
 
   if ($sdl_renderer_p == NULL) {
     printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
@@ -36,9 +34,9 @@ bool Window::init(std::string title, int width, int height) {
   SDL_SetRenderDrawColor($sdl_renderer_p, 0xFF, 0xFF, 0xFF, 0xFF); // FUTURE: Renderer class
 
   // Initialize PNG loading
-  int img_flags = IMG_INIT_PNG;
+  int img_flags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF;
 
-  if ((IMG_Init(IMG_INIT_PNG) & img_flags) != img_flags) {
+  if ((IMG_Init(img_flags) & img_flags) != img_flags) {
     printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
     return false;
   }
