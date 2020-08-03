@@ -48,10 +48,36 @@ bool Window::init(std::string title, int width, int height) {
 }
 
 void Window::render_surface(SDL_Surface* sdl_surface_p) {
-  // Apply the image
   SDL_BlitSurface(sdl_surface_p, NULL, $sdl_surface_p, NULL);
-  // Update the surface
   SDL_UpdateWindowSurface($sdl_p);
+}
+
+void Window::render_texture(Texture* texture_p, SDL_Rect render_area, SDL_Rect clipping_area) {
+  if (clipping_area.w <= 0) clipping_area.w = texture_p->width;
+  if (clipping_area.h <= 0) clipping_area.h = texture_p->height;
+
+  if (render_area.w <= 0) render_area.w = clipping_area.w;
+  if (render_area.h <= 0) render_area.h = clipping_area.h;
+
+  SDL_RenderCopy($sdl_renderer_p, texture_p->pointer, &clipping_area, &render_area);
+}
+
+void Window::apply_renderer() {
+  SDL_RenderPresent($sdl_renderer_p);
+}
+
+void Window::clear_renderer() {
+  set_renderer_color(0x00, 0x00, 0x00, 0x00);
+  set_renderer_viewport(NULL);
+  SDL_RenderClear($sdl_renderer_p);
+}
+
+void Window::set_renderer_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+  SDL_SetRenderDrawColor($sdl_renderer_p, r, g, b, a);
+}
+
+void Window::set_renderer_viewport(SDL_Rect* viewport_p) {
+  SDL_RenderSetViewport($sdl_renderer_p, viewport_p);
 }
 
 void Window::sleep(int secs) {

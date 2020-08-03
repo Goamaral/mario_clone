@@ -32,7 +32,7 @@ bool init() {
 }
 
 bool load_surface(int key, std::string resource_path) {
-  return (surfaces[key] = surface_load_optimized(resource_path, global_window_p->surface_p)) != NULL;
+  return (surfaces[key] = load_from_file(resource_path, global_window_p->surface_p)) != NULL;
 }
 
 bool load_media() {

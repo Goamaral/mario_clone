@@ -20,45 +20,42 @@ void event_loop() {
   if (!ok) return;
 
   const int WALKING_ANIMATION_FRAMES = 4;
-  SDL_Rect walking_stripes[WALKING_ANIMATION_FRAMES];
+  SDL_Rect walking_stripe_clips[WALKING_ANIMATION_FRAMES];
 
-  // Walking Stripe 0
-  walking_stripes[0].x = 0;
-  walking_stripes[0].y = 0;
-  walking_stripes[0].w = 64;
-  walking_stripes[0].h = 205;
+  // Walking Stripe Clip 0
+  walking_stripe_clips[0].x = 0;
+  walking_stripe_clips[0].y = 0;
+  walking_stripe_clips[0].w = 64;
+  walking_stripe_clips[0].h = 205;
 
-  // Walking Stripe 1
-  walking_stripes[1].x = 64;
-  walking_stripes[1].y = 0;
-  walking_stripes[1].w = 64;
-  walking_stripes[1].h = 205;
+  // Walking Stripe Clip 1
+  walking_stripe_clips[1].x = 64;
+  walking_stripe_clips[1].y = 0;
+  walking_stripe_clips[1].w = 64;
+  walking_stripe_clips[1].h = 205;
 
-  // Walking Stripe 2
-  walking_stripes[2].x = 128;
-  walking_stripes[2].y = 0;
-  walking_stripes[2].w = 64;
-  walking_stripes[2].h = 205;
+  // Walking Stripe Clip 2
+  walking_stripe_clips[2].x = 128;
+  walking_stripe_clips[2].y = 0;
+  walking_stripe_clips[2].w = 64;
+  walking_stripe_clips[2].h = 205;
 
-  // Walking Stripe 3
-  walking_stripes[3].x = 128;
-  walking_stripes[3].y = 0;
-  walking_stripes[3].w = 64;
-  walking_stripes[3].h = 205;
+  // Walking Stripe Clip 3
+  walking_stripe_clips[3].x = 128;
+  walking_stripe_clips[3].y = 0;
+  walking_stripe_clips[3].w = 64;
+  walking_stripe_clips[3].h = 205;
 
-  // HERE
-
+  int current_frame = 0;
   SDL_Event event;
 
   while (true) {
     if (SDL_PollEvent(&event)) {
       switch (event.type) {
-        // User requests quit
         case SDL_QUIT:
           return;
-        // User presses a key
+
         case SDL_KEYDOWN:
-          // Select surfaces based on key press
           switch(event.key.keysym.sym) {
             case SDLK_ESCAPE:
               return;
@@ -69,7 +66,10 @@ void event_loop() {
           printf("Unhandled event with type %d\n", event.type);
       }
     } else {
-      printf("No events to handle\n");
+      window.clear_renderer();
+      window.render_texture(&walking_texture, SDL_Rect(), walking_stripe_clips[current_frame]);
+      window.apply_renderer();
+      current_frame = (current_frame + 1) % WALKING_ANIMATION_FRAMES;
     }
   }
 }

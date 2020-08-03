@@ -3,7 +3,7 @@
 
 #include <string>
 
-// CUSTOM LIBS
+#include "Texture.hpp"
 
 #ifndef WINDOW_H
 #define WINDOW_H
@@ -24,6 +24,11 @@ class Window {
     void free();
     bool init(std::string, int, int);
     void render_surface(SDL_Surface*);
+    void render_texture(Texture*, SDL_Rect, SDL_Rect);
+    void apply_renderer();
+    void clear_renderer();
+    void set_renderer_color(Uint8, Uint8, Uint8, Uint8);
+    void set_renderer_viewport(SDL_Rect*);
     void sleep(int);
 };
 

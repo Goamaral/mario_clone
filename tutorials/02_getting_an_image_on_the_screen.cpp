@@ -22,5 +22,6 @@ void run() {
   }
 
   window.render_surface(sld_surface_p);
+  window.update();
   window.sleep(2);
 }
