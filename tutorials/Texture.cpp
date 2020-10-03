@@ -39,7 +39,7 @@ bool Texture::load_from_file(std::string path, SDL_Renderer* renderer_p, Uint8 r
 // Deallocates texture
 void Texture::free() {
   // Free texture if it exists
-  if(pointer != NULL) {
+  if (pointer != NULL) {
     SDL_DestroyTexture(pointer);
     pointer = NULL;
     width = 0;

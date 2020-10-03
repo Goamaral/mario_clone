@@ -1,13 +1,13 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#ifndef TEXTURE_H
+#define TEXTURE_H
 
 #include <cstdio>
 #include <string>
 
-#ifndef SURFACE_H
-#define SURFACE_H
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 #include "Surface.hpp"
-#endif
 
 class Texture {
   public:
@@ -33,3 +33,5 @@ class Texture {
       // Set alpha modulation
       void set_alpha(Uint8);
 };
+
+#endif
