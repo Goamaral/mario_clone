@@ -1,7 +1,6 @@
 #include "System.hpp"
 
 System::System() {
-  exit_status = 0;
   $sdl_inited = false;
   $sdl_img_inited = false;
 }
@@ -34,4 +33,14 @@ std::shared_ptr<Window> System::create_window(std::string title, int width, int 
 
 void System::delay(Uint32 ms) {
   SDL_Delay(ms);
+}
+
+void System::event_loop(std::function<bool(SDL_Event)> event_handler) {
+  SDL_Event event;
+  bool running = true;
+
+  while (running) {
+    SDL_PollEvent(&event);
+    running = event_handler(event);
+  }
 }

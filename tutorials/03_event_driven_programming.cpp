@@ -1,38 +1,27 @@
 #include "03_event_driven_programming.hpp"
 
 int main(int argc, char** args) {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    printf("SDL could not initialize SDL_Error: %s\n", SDL_GetError());
-    return 1;
-  } else {
-    SDL_Event event;
-    Window window;
-    window.init(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT); // FUTURE: Write to STDERR if false returned
+  System system;
 
-    while (true) {
-      if (SDL_PollEvent(&event)) {
-        switch (event.type) {
-          // User requests quit
-          case SDL_QUIT:
-            return;
-          // User presses a key
-          case SDL_KEYDOWN:
-            // Select surfaces based on key press
-            switch(event.key.keysym.sym) {
-              case SDLK_ESCAPE:
-                return;
-            }
-            break;
+  system.init(SDL_INIT_VIDEO);
 
-          default:
-            printf("Unhandled event with type %d\n", event.type);
+  std::shared_ptr<Window> window_p = system.create_window(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+  
+  system.event_loop([](SDL_Event event) {
+    switch (event.type) {
+      case SDL_QUIT:
+        return false;
+
+      case SDL_KEYDOWN:
+        switch(event.key.keysym.sym) {
+          case SDLK_ESCAPE:
+            return false;
         }
-      } else {
-        printf("No events to handle\n");
-      }
+        break;
     }
 
-    SDL_Quit();
-    return 0;
-  }
+    return true;
+  });
+
+  return 0;
 }
