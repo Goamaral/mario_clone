@@ -1,7 +1,4 @@
-all: main 02 03
-
-main:
-	g++ main.cpp Window.cpp Surface.cpp Texture.cpp -o main -lSDL2 -lSDL2_image -Wall
+all: 02 03
 
 02: System NewWindow NewSurface
 	g++ 02_getting_an_image_on_the_screen.cpp System.o NewWindow.o NewSurface.o -o 02 -lSDL2 -lSDL2_image -Wall
@@ -12,6 +9,7 @@ main:
 14:
 	g++ 14_animated_sprites_and_vsync.cpp NewWindow.cpp Texture.cpp Surface.cpp -o 14 -lSDL2 -lSDL2_image -Wall
 
+# Components #
 System:
 	g++ System.cpp -c -Wall
 
