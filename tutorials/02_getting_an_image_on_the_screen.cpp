@@ -7,7 +7,7 @@ int main(int argc, char** args) {
   system.init_img_support(IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF);
 
   std::shared_ptr<Window> window_p = system.create_window(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
-  std::unique_ptr<Surface> surface_p (Surface::load_from_bmp("resources/surfaces/hello_world.bmp"));
+  std::unique_ptr<Surface> surface_p (Surface::load_from_bmp("resources/images/hello_world.bmp"));
 
   // If image could not be loaded terminate
   if (surface_p.get()->sdl_p == NULL) return 1;
