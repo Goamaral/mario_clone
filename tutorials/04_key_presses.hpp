@@ -1,6 +1,9 @@
 #include <memory>
 
+#include <SDL2/SDL.h>
+
 #include "System.hpp"
+#include "Window.hpp"
 
 // Screen dimension constants
 #define WINDOW_TITLE "SDL Tutorial"

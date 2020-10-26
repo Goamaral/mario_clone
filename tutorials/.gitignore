@@ -1,5 +1,6 @@
 *.o
 main
-02
-03
+02_getting_an_image_on_the_screen
+03_event_driven_programming
+04_key_presses
 14

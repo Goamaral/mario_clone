@@ -12,7 +12,11 @@ Surface::~Surface() {
 Surface* Surface::load_from_bmp(std::string image_location) {
   SDL_Surface* sdl_surface_p = SDL_LoadBMP(image_location.c_str());
 
-  if (sdl_surface_p == NULL) SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "%s", SDL_GetError());
+  if (sdl_surface_p == NULL) {
+    const char* error_message = SDL_GetError();
+    SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "%s", error_message);
+    throw std::string(error_message);
+  }
 
   return new Surface(sdl_surface_p);
 }

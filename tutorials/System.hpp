@@ -2,9 +2,9 @@
 #define SYSTEM_H
 
 #include <string>
-#include <vector>
 #include <memory>
 #include <functional>
+#include <unordered_map>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_assert.h>
@@ -19,14 +19,16 @@ class System {
 
     void init(Uint32);
     void init_img_support(int);
-    std::shared_ptr<Window> create_window(std::string, int, int);
+    std::shared_ptr<Window> create_window(std::string, std::string, int, int);
     void delay(Uint32);
-    void event_loop(std::function<bool(SDL_Event)>);
+    std::shared_ptr<Surface> load_surface_from_bmp(std::string, std::string);
+    void render_surface(std::string, std::string);
 
   private:
     bool $sdl_inited;
     bool $sdl_img_inited;
-    std::vector< std::shared_ptr<Window> > $windows;
+    std::unordered_map< std::string, std::shared_ptr<Window> > $windows;
+    std::unordered_map< std::string, std::shared_ptr<Surface> > $surfaces;
 };
 
 #endif

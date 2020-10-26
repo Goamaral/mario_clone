@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <exception>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_assert.h>
