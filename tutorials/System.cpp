@@ -36,17 +36,25 @@ void System::delay(Uint32 ms) {
   SDL_Delay(ms);
 }
 
-std::shared_ptr<Surface> System::load_surface_from_bmp(std::string key, std::string image_location) {
-  std::shared_ptr<Surface> surface_p(Surface::load_from_bmp(image_location));
+std::shared_ptr<Surface> System::load_surface_from_bmp(std::string key, std::string image_location, std::string window_key) {
+  SDL_PixelFormat* sdl_pixel_format_p = NULL;
+  
+  if (window_key != "") {
+    
+    std::shared_ptr<Window> window_p = $windows.at(window_key);
+    sdl_pixel_format_p = window_p->surface_pixel_format();
+  }
+
+  std::shared_ptr<Surface> surface_p(Surface::load_from_bmp(image_location, sdl_pixel_format_p));
 
   $surfaces.insert({ key, surface_p });
 
   return surface_p;
 }
 
-void System::render_surface(std::string window_key, std::string surface_key) {
+void System::render_surface(std::string window_key, std::string surface_key, bool scaled) {
   std::shared_ptr<Window> window_p = $windows.at(window_key);
   std::shared_ptr<Surface> surface_p = $surfaces.at(surface_key);
 
-  window_p->render_surface(surface_p.get());
+  window_p->render_surface(surface_p.get(), scaled);
 }

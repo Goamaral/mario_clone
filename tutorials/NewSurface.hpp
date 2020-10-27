@@ -16,7 +16,7 @@ class Surface {
     Surface(SDL_Surface*);
     ~Surface();
 
-    static Surface* load_from_bmp(std::string);
+    static Surface* load_from_bmp(std::string, SDL_PixelFormat* = NULL);
 
   private:
 };

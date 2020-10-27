@@ -16,10 +16,11 @@ class Window {
     ~Window();
 
     void init(std::string, int, int);
-    void render_surface(Surface*);
+    void render_surface(Surface*, bool = false);
     void renderer_apply_texture(Texture*, SDL_Rect, SDL_Rect);
     void renderer_render();
     void renderer_clear();
+    SDL_PixelFormat* surface_pixel_format();
 
   private:
     SDL_Window* $sdl_p;

@@ -30,8 +30,15 @@ void Window::init(std::string title, int width, int height) {
   SDL_assert($sdl_surface_p != NULL);
 }
 
-void Window::render_surface(Surface* surface_p) {
-  int result = SDL_BlitSurface(surface_p->sdl_p, NULL, $sdl_surface_p, NULL); // TODO: Surface::copy(SDL_Surface* destination, SDL_Surface* target)
+void Window::render_surface(Surface* surface_p, bool scaled) {
+  int result = 0;
+
+  if (scaled) {
+    result = SDL_BlitScaled(surface_p->sdl_p, NULL, $sdl_surface_p, NULL); // TODO: Surface::copy_scaled(SDL_Surface* destination, SDL_Surface* target)
+  } else {
+    result = SDL_BlitSurface(surface_p->sdl_p, NULL, $sdl_surface_p, NULL); // TODO: Surface::copy(SDL_Surface* destination, SDL_Surface* target)
+  }
+
   SDL_assert(result == 0);
 
   result = SDL_UpdateWindowSurface($sdl_p);
@@ -60,4 +67,8 @@ void Window::renderer_render() {
   SDL_assert(result == 0);
 
   SDL_RenderPresent($sdl_renderer_p);
+}
+
+SDL_PixelFormat* Window::surface_pixel_format() {
+  return $sdl_surface_p->format;
 }
