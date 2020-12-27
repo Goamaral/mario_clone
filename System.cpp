@@ -40,7 +40,6 @@ std::shared_ptr<Surface> System::load_surface_from_bmp(std::string key, std::str
   SDL_PixelFormat* sdl_pixel_format_p = NULL;
   
   if (window_key != "") {
-    
     std::shared_ptr<Window> window_p = $windows.at(window_key);
     sdl_pixel_format_p = window_p->surface_pixel_format();
   }

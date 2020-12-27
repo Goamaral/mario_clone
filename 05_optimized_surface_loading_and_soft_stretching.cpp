@@ -5,7 +5,7 @@ int main(int argc, char** args) {
   system.init(SDL_INIT_VIDEO);
   system.create_window("main", WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    try {
+  try {
     system.load_surface_from_bmp("stretch", "resources/images/stretch.bmp", "main");
   } catch (std::string) {
     return 1;
