@@ -1,2 +1,8 @@
-.vscode/
+*.o
 main
+02_getting_an_image_on_the_screen
+03_event_driven_programming
+04_key_presses
+05_optimized_surface_loading_and_soft_stretching
+14
+.vscode/
