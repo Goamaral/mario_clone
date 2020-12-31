@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_assert.h>
 #include <SDL2/SDL_log.h>
+#include <SDL2/SDL_image.h>
 
 class Surface {
   public:
@@ -16,7 +17,9 @@ class Surface {
     Surface(SDL_Surface*);
     ~Surface();
 
+    static SDL_Surface* optimize_sdl_surface(SDL_Surface*, SDL_PixelFormat*);
     static Surface* load_from_bmp(std::string, SDL_PixelFormat* = NULL);
+    static Surface* load_from_png(std::string, SDL_PixelFormat* = NULL);
 
   private:
 };
