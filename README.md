@@ -1,4 +1,5 @@
 # Learning SDL2
+Following [Lazyfoo SDL tutorials](https://lazyfoo.net/tutorials/SDL) while developing an engine around SDL2
 
 # Dependencies
 - SDL2
