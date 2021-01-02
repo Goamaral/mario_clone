@@ -1,40 +1,50 @@
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <string>
+#include <unordered_map>
 
-#ifndef SURFACE_H
-#define SURFACE_H
-#include "Surface.hpp"
-#endif
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_assert.h>
+#include <SDL2/SDL_image.h>
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
 #include "Texture.hpp"
-#endif
+#include "Surface.hpp"
 
-// Screen dimension constants
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
-#define WINDOW_TITLE "SDL Tutorial"
+class Window {
+  public:
+    Window();
+    ~Window();
 
-struct window_t {
-  SDL_Window* p = NULL;
-  SDL_Renderer* renderer_p = NULL;
-  SDL_Surface* surface_p = NULL;
+    // STATIC METHODS
+
+    // INSTANCE METHODS
+    // GENERAL
+    void init(std::string, int, int);
+    void renderer_render();
+    void renderer_clear();
+
+    // SURFACES
+    void render_surface(Surface*, bool = false);
+
+    // TEXTURES
+    std::shared_ptr<Texture> load_texture_from_png(std::string, std::string);
+    void render_texture(std::string);
+
+    // GETTERS
+    SDL_PixelFormat* surface_pixel_format();
+
+    // LEGACY
+    // void renderer_apply_texture(Texture*, SDL_Rect, SDL_Rect);
+
+  private:
+    SDL_Window* $sdl_p;
+    SDL_Renderer* $sdl_renderer_p;
+    SDL_Surface* $sdl_surface_p;
+    std::string $title;
+    int $width;
+    int $height;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> $textures;
 };
 
-extern window_t* global_window_p;
-
-bool window_init(std::string, int, int);
-void window_destroy();
-void window_render_surface(SDL_Surface*);
-void window_render_texture(Texture*, SDL_Rect, SDL_Rect = SDL_Rect());
-void window_set_viewport(SDL_Rect*);
-void window_reset_renderer();
-void window_render_renderer();
-void window_set_renderer_color(Uint8, Uint8, Uint8, Uint8);
-void window_add_geo_rect(SDL_Rect*);
-void window_add_geo_line(int, int, int, int);
-void window_add_geo_point(int, int);
+#endif

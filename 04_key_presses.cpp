@@ -6,11 +6,11 @@ int main(int argc, char** args) {
   system.create_window("main", WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   try {
-    system.load_surface_from_bmp("default", "resources/images/default.bmp");
-    system.load_surface_from_bmp("up", "resources/images/up.bmp");
-    system.load_surface_from_bmp("down", "resources/images/down.bmp");
-    system.load_surface_from_bmp("left", "resources/images/left.bmp");
-    system.load_surface_from_bmp("right", "resources/images/right.bmp");
+    system.load_surface_from_bmp("resources/images/default.bmp", "default", "main");
+    system.load_surface_from_bmp("resources/images/up.bmp", "up", "main");
+    system.load_surface_from_bmp("resources/images/down.bmp", "down", "main");
+    system.load_surface_from_bmp("resources/images/left.bmp", "left", "main");
+    system.load_surface_from_bmp("resources/images/right.bmp", "right", "main");
   } catch (std::string) {
     return 1;
   }

@@ -1,37 +1,66 @@
 #include "Surface.hpp"
 
-SDL_Surface* surface_load_optimized(std::string resource_path, SDL_Surface* surface_p) {
-  // Optimized image
-  SDL_Surface* optimized_surface = NULL;
-
-  // Load surface image
-  SDL_Surface* loaded_surface = surface_load_from_image(resource_path);
-
-  if (loaded_surface) {
-    // Convert surface to screen format
-    optimized_surface = SDL_ConvertSurface(loaded_surface, surface_p->format, 0);
-
-    if (!optimized_surface) {
-      printf("Unable to optimize image %s SDL Error: %s\n", resource_path.c_str(), SDL_GetError());
-    }
-
-    // Free old loaded surface
-    SDL_FreeSurface(loaded_surface);
-  }
-
-  return optimized_surface;
+Surface::Surface(SDL_Surface* sdl_surface_p) {
+  $sdl_p = sdl_surface_p;
 }
 
-SDL_Surface* surface_load_from_image(std::string image_location) {
-  SDL_Surface* loaded_surface = IMG_Load(image_location.c_str());
-
-  if (!loaded_surface) {
-    printf("Failed to load image %s SDL Error: %s\n", image_location.c_str(), IMG_GetError());
-  }
-
-  return loaded_surface;
+Surface::~Surface() {
+  if ($sdl_p) SDL_FreeSurface($sdl_p);
 }
 
-void surface_free(SDL_Surface* surface_p) {
-  if (surface_p) SDL_FreeSurface(surface_p);
+// STATIC METHODS
+SDL_Surface* Surface::optimize_sdl_surface(SDL_Surface* sdl_surface_p, SDL_PixelFormat* sdl_pixel_format_p) {
+  SDL_Surface* sdl_optimized_surface_p = SDL_ConvertSurface(sdl_surface_p, sdl_pixel_format_p, 0);
+
+  if (sdl_optimized_surface_p != NULL) {
+    SDL_FreeSurface(sdl_surface_p);
+  } else {
+    sdl_optimized_surface_p = sdl_surface_p;
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Surface optimization failed\n");
+  }
+
+  return sdl_optimized_surface_p;
+}
+
+Surface* Surface::load_from_bmp(std::string image_location, SDL_PixelFormat* sdl_pixel_format_p) {
+  SDL_Surface* sdl_surface_p = SDL_LoadBMP(image_location.c_str());
+
+  if (sdl_surface_p == NULL) {
+    const char* error_message = SDL_GetError();
+    SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "%s", error_message);
+    throw std::string(error_message);
+  }
+
+  if (sdl_pixel_format_p != NULL) sdl_surface_p = Surface::optimize_sdl_surface(sdl_surface_p, sdl_pixel_format_p);
+
+  return new Surface(sdl_surface_p);
+}
+
+Surface* Surface::load_from_png(std::string image_location, SDL_PixelFormat* sdl_pixel_format_p) {
+  SDL_Surface* sdl_surface_p = IMG_Load(image_location.c_str());
+
+  if (sdl_surface_p == NULL) {
+    const char* error_message = SDL_GetError();
+    SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "%s", error_message);
+    throw std::string(error_message);
+  }
+
+  if (sdl_pixel_format_p != NULL) sdl_surface_p = Surface::optimize_sdl_surface(sdl_surface_p, sdl_pixel_format_p);
+
+  return new Surface(sdl_surface_p);
+}
+
+// INSTANCE METHODS
+
+// GETTERS
+SDL_Surface* Surface::sdl_p() {
+  return $sdl_p;
+}
+
+int Surface::width() {
+  return $sdl_p->w;
+}
+
+int Surface::height() {
+  return $sdl_p->h;
 }

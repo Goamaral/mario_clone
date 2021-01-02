@@ -6,7 +6,7 @@ int main(int argc, char** args) {
   system.create_window("main", WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   try {
-    system.load_surface_from_bmp("stretch", "resources/images/stretch.bmp", "main");
+    system.load_surface_from_bmp("resources/images/stretch.bmp", "stretch", "main");
   } catch (std::string) {
     return 1;
   }

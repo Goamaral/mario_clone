@@ -10,18 +10,27 @@
 #include <SDL2/SDL_assert.h>
 #include <SDL2/SDL_image.h>
 
-#include "NewWindow.hpp"
+#include "Window.hpp"
 
 class System {
   public:
     System();
     ~System();
 
+    // STATIC METHODS
+
+    // INSTANCE METHODS
+    // GENERAL
     void init(Uint32);
-    std::shared_ptr<Window> create_window(std::string, std::string, int, int);
+    void init_png_img();
     void delay(Uint32);
-    std::shared_ptr<Surface> load_surface_from_bmp(std::string, std::string, std::string = "");
-    std::shared_ptr<Surface> load_surface_from_png(std::string, std::string, std::string = "");
+
+    // WINDOWS
+    std::shared_ptr<Window> create_window(std::string, std::string, int, int);
+
+    // SURFACES
+    std::shared_ptr<Surface> load_surface_from_bmp(std::string, std::string, std::string);
+    std::shared_ptr<Surface> load_surface_from_png(std::string, std::string, std::string);
     void render_surface(std::string, std::string, bool = false);
 
     private:

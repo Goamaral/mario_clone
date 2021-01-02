@@ -5,33 +5,44 @@
 #include <string>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_assert.h>
+#include <SDL2/SDL_log.h>
 #include <SDL2/SDL_image.h>
 
 #include "Surface.hpp"
 
 class Texture {
   public:
-      SDL_Texture* pointer;
-      int width;
-      int height;
-
-      Texture();
+      Texture(SDL_Texture*, int, int);
       ~Texture();
 
-      // Loads image at specified path
-      bool load_from_file(std::string, SDL_Renderer*, Uint8 = 0x00, Uint8 = 0x00, Uint8 = 0x00);
+      // STATIC METHODS
 
-      // Deallocates texture
-      void free();
+      // INSTANCE METHODS
 
-      // Set modulation color
-      void set_modulation_color(Uint8, Uint8, Uint8);
+      // GETTERS
+      SDL_Texture* sdl_p();
 
-      // Set blending mode
-      void set_blend_mode(SDL_BlendMode);
+      // LEGACY
+      // // Loads image at specified path
+      // bool load_from_file(std::string, SDL_Renderer*, Uint8 = 0x00, Uint8 = 0x00, Uint8 = 0x00);
 
-      // Set alpha modulation
-      void set_alpha(Uint8);
+      // // Deallocates texture
+      // void free();
+
+      // // Set modulation color
+      // void set_modulation_color(Uint8, Uint8, Uint8);
+
+      // // Set blending mode
+      // void set_blend_mode(SDL_BlendMode);
+
+      // // Set alpha modulation
+      // void set_alpha(Uint8);
+
+  private:
+    SDL_Texture* $sdl_p;
+    int $width;
+    int $height;
 };
 
 #endif

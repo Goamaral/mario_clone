@@ -1,95 +1,105 @@
 #include "Window.hpp"
 
-window_t* global_window_p = NULL;
+Window::Window() {
+  $sdl_p = NULL;
+  $sdl_renderer_p = NULL;
+  $sdl_surface_p = NULL;
+}
 
-bool window_init(std::string title, int width, int height) {
-  global_window_p = new window_t;
-  global_window_p->p = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
-    SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN
-  );
+Window::~Window() {
+  if ($sdl_surface_p) SDL_FreeSurface($sdl_surface_p);
+  if ($sdl_renderer_p) SDL_DestroyRenderer($sdl_renderer_p);
+  if ($sdl_p) SDL_DestroyWindow($sdl_p);
+}
 
-  if (global_window_p->p) {
-    // Window Renderer
-    global_window_p->renderer_p = SDL_CreateRenderer(global_window_p->p, -1, SDL_RENDERER_ACCELERATED);
+// STATIC METHODS
 
-    // Initialize renderer color
-    if (global_window_p->renderer_p)  {
-      SDL_SetRenderDrawColor(global_window_p->renderer_p, 0xFF, 0xFF, 0xFF, 0xFF);
+// INSTANCE METHODS
+// GENERAL
+void Window::init(std::string title, int width, int height) {
+  $title = title;
+  $width = width;
+  $height = height;
 
-      // Initialize PNG loading
-      int img_flags = IMG_INIT_PNG;
+  $sdl_p = SDL_CreateWindow($title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, $width, $height, SDL_WINDOW_SHOWN);
+  SDL_assert($sdl_p != NULL);
 
-      if(!!(IMG_Init(img_flags) & img_flags)) {
-        // Check window surface
-        global_window_p->surface_p = SDL_GetWindowSurface(global_window_p->p);
-        if (global_window_p->surface_p) return true;
+  $sdl_renderer_p = SDL_CreateRenderer($sdl_p, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); 
+  SDL_assert($sdl_renderer_p != NULL);
 
-      } else {
-        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-      }
+  int result = SDL_SetRenderDrawColor($sdl_renderer_p, 0xFF, 0xFF, 0xFF, 0xFF);
+  SDL_assert(result == 0);
 
-    } else {
-      printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-    }
+  $sdl_surface_p = SDL_GetWindowSurface($sdl_p);
+  SDL_assert($sdl_surface_p != NULL);
+}
+
+void Window::renderer_render() {
+  int result = SDL_SetRenderDrawColor($sdl_renderer_p, 0x00, 0x00, 0x00, 0x00);
+  SDL_assert(result == 0);
+
+  result = SDL_RenderSetViewport($sdl_renderer_p, NULL);
+  SDL_assert(result == 0);
+
+  result = SDL_RenderClear($sdl_renderer_p);
+  SDL_assert(result == 0);
+
+  SDL_RenderPresent($sdl_renderer_p);
+}
+
+// SURFACES
+void Window::render_surface(Surface* surface_p, bool scaled) {
+  int result = 0;
+
+  if (scaled) {
+    result = SDL_BlitScaled(surface_p->sdl_p(), NULL, $sdl_surface_p, NULL); // TODO: Surface::copy_scaled(SDL_Surface* destination, SDL_Surface* target)
   } else {
-    printf("Window could not be created SDL_Error: %s\n", SDL_GetError());
+    result = SDL_BlitSurface(surface_p->sdl_p(), NULL, $sdl_surface_p, NULL); // TODO: Surface::copy(SDL_Surface* destination, SDL_Surface* target)
   }
 
-  return false;
+  SDL_assert(result == 0);
+
+  result = SDL_UpdateWindowSurface($sdl_p);
+  SDL_assert(result == 0);
 }
 
-void window_destroy() {
-  if (global_window_p) {
-    if (global_window_p->surface_p) surface_free(global_window_p->surface_p);
-    if (global_window_p->renderer_p) SDL_DestroyRenderer(global_window_p->renderer_p);
-    if (global_window_p->p) SDL_DestroyWindow(global_window_p->p);
-  }
+// TEXTURES
+// NOTE: Move this to system
+std::shared_ptr<Texture> Window::load_texture_from_png(std::string image_location, std::string key) {
+  std::unique_ptr<Surface> surface_p(Surface::load_from_png(image_location));
+
+  // NOTE: Move this static texture method
+  SDL_Texture* sdl_texture_p = SDL_CreateTextureFromSurface($sdl_renderer_p, surface_p->sdl_p());
+  SDL_assert(sdl_texture_p != NULL);
+
+  Texture* raw_texture_p = new Texture(sdl_texture_p, surface_p->width(), surface_p->height());
+
+  std::shared_ptr<Texture> texture_p(raw_texture_p);
+
+  $textures.insert({key, texture_p});
+
+  return texture_p;
 }
 
-void window_render_surface(SDL_Surface* surface_to_render_p) {
-  // Apply the image
-  SDL_BlitSurface(surface_to_render_p, NULL, global_window_p->surface_p, NULL);
-
-  // Update the surface
-  SDL_UpdateWindowSurface(global_window_p->p);
+void Window::render_texture(std::string texture_key) {
+   std::shared_ptr<Texture> texture_p = $textures.at(texture_key);
+  int result = SDL_RenderCopy($sdl_renderer_p, texture_p->sdl_p(), NULL, NULL);
+  SDL_assert(result == 0);
 }
 
-void window_render_texture(Texture* texture_p, SDL_Rect render_area, SDL_Rect clipping_area) {
-  if (render_area.w <= 0) render_area.w = texture_p->width;
-  if (render_area.h <= 0) render_area.h = texture_p->height;
-  if (clipping_area.w <= 0) clipping_area.w = texture_p->width;
-  if (clipping_area.h <= 0) clipping_area.h = texture_p->height;
-
-  SDL_RenderCopy(global_window_p->renderer_p, texture_p->pointer, &clipping_area, &render_area);
+// GETTERS
+SDL_PixelFormat* Window::surface_pixel_format() {
+  return $sdl_surface_p->format;
 }
 
-void window_set_viewport(SDL_Rect* viewport_p) {
-  SDL_RenderSetViewport(global_window_p->renderer_p, viewport_p);
-}
+// LEGACY
+// void Window::renderer_apply_texture(Texture* texture_p, SDL_Rect render_area, SDL_Rect clipping_area) {
+//   if (clipping_area.w <= 0) clipping_area.w = texture_p->width;
+//   if (clipping_area.h <= 0) clipping_area.h = texture_p->height;
 
-void window_reset_renderer() {
-  window_set_renderer_color(0x00, 0x00, 0x00, 0x00);
-  SDL_Rect rect = { 0, 0 , WINDOW_WIDTH, WINDOW_WIDTH };
-  window_set_viewport(&rect);
-  SDL_RenderClear(global_window_p->renderer_p);
-}
+//   if (render_area.w <= 0) render_area.w = clipping_area.w;
+//   if (render_area.h <= 0) render_area.h = clipping_area.h;
 
-void window_render_renderer() {
-  SDL_RenderPresent(global_window_p->renderer_p);
-}
-
-void window_set_renderer_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
-  SDL_SetRenderDrawColor(global_window_p->renderer_p, r, g, b, a);
-}
-
-void window_add_geo_rect(SDL_Rect* rect_p) {
-  SDL_RenderFillRect(global_window_p->renderer_p, rect_p);
-}
-
-void window_add_geo_line(int x1, int y1, int x2, int y2) {
-  SDL_RenderDrawLine(global_window_p->renderer_p, x1, y1, x2, y2);
-}
-
-void window_add_geo_point(int x, int y) {
-  SDL_RenderDrawPoint(global_window_p->renderer_p, x, y);
-}
+//   int result = SDL_RenderCopy($sdl_renderer_p, texture_p->pointer, &clipping_area, &render_area);
+//   SDL_assert(result == 0);
+// }
