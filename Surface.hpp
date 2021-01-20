@@ -21,6 +21,8 @@ class Surface {
     static SDL_Surface* optimize_sdl_surface(SDL_Surface*, SDL_PixelFormat*);
     static Surface* load_from_bmp(std::string, SDL_PixelFormat* = NULL);
     static Surface* load_from_png(std::string, SDL_PixelFormat* = NULL);
+    static void copy_scaled(SDL_Surface*, SDL_Surface*);
+    static void copy(SDL_Surface*, SDL_Surface*);
 
     // INSTANCE METHODS
 

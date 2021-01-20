@@ -50,6 +50,16 @@ Surface* Surface::load_from_png(std::string image_location, SDL_PixelFormat* sdl
   return new Surface(sdl_surface_p);
 }
 
+void Surface::copy_scaled(SDL_Surface* source_surface_p, SDL_Surface* destination_surface_p) {
+  int result = SDL_BlitScaled(source_surface_p, NULL, destination_surface_p, NULL);
+  SDL_assert(result == 0);
+}
+
+void Surface::copy(SDL_Surface* source_surface_p, SDL_Surface* destination_surface_p) {
+  int result = SDL_BlitSurface(source_surface_p, NULL, destination_surface_p, NULL);
+  SDL_assert(result == 0);
+}
+
 // INSTANCE METHODS
 
 // GETTERS

@@ -22,17 +22,17 @@ class Window {
     // GENERAL
     void init(std::string, int, int);
     void renderer_render();
-    void renderer_clear();
+    void renderer_reset();
 
     // SURFACES
     void render_surface(Surface*, bool = false);
 
     // TEXTURES
-    std::shared_ptr<Texture> load_texture_from_png(std::string, std::string);
-    void render_texture(std::string);
+    void render_texture(Texture*);
 
     // GETTERS
     SDL_PixelFormat* surface_pixel_format();
+    SDL_Renderer* sdl_renderer_p();
 
     // LEGACY
     // void renderer_apply_texture(Texture*, SDL_Rect, SDL_Rect);
@@ -44,7 +44,6 @@ class Window {
     std::string $title;
     int $width;
     int $height;
-    std::unordered_map<std::string, std::shared_ptr<Texture>> $textures;
 };
 
 #endif

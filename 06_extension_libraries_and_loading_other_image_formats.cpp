@@ -6,7 +6,7 @@ int main(int argc, char** args) {
   system.create_window("main", WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   try {
-    system.load_surface_from_png("png_loaded", "resources/images/png_loaded.png", "main");
+    system.load_surface_from_png("resources/images/png_loaded.png", "png_loaded", "main");
   } catch (std::string) {
     return 1;
   }

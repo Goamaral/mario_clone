@@ -33,12 +33,17 @@ class System {
     std::shared_ptr<Surface> load_surface_from_png(std::string, std::string, std::string);
     void render_surface(std::string, std::string, bool = false);
 
+    // TEXTURES
+    std::shared_ptr<Texture> load_texture_from_png(std::string, std::string, std::string);
+    void render_texture(std::string, std::string);
+
     private:
       bool $sdl_inited;
       bool $sdl_img_inited;
       bool $sdl_png_img_inited;
       std::unordered_map<std::string, std::shared_ptr<Window>> $windows;
       std::unordered_map<std::string, std::shared_ptr<Surface>> $surfaces;
+      std::unordered_map<std::string, std::shared_ptr<Texture>> $textures;
     };
 
 #endif

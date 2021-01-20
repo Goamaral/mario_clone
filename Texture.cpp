@@ -11,6 +11,14 @@ Texture::~Texture() {
 }
 
 // STATIC METHODS
+Texture* Texture::load_from_png(std::string image_location, SDL_Renderer* sdl_renderer_p) {
+  std::unique_ptr<Surface> surface_p(Surface::load_from_png(image_location));
+
+  SDL_Texture* sdl_texture_p = SDL_CreateTextureFromSurface(sdl_renderer_p, surface_p->sdl_p());
+  SDL_assert(sdl_texture_p != NULL);
+
+  return new Texture(sdl_texture_p, surface_p->width(), surface_p->height());
+}
 
 // INSTANCE METHODS
 

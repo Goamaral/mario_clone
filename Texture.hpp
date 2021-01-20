@@ -17,6 +17,7 @@ class Texture {
       ~Texture();
 
       // STATIC METHODS
+      static Texture* load_from_png(std::string, SDL_Renderer*);
 
       // INSTANCE METHODS
 

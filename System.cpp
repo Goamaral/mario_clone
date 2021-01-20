@@ -8,6 +8,7 @@ System::System() {
 System::~System() {
   $windows.clear();
   $surfaces.clear();
+  $textures.clear();
 
   if ($sdl_img_inited) IMG_Quit();
   if ($sdl_inited) SDL_Quit();
@@ -44,7 +45,7 @@ std::shared_ptr<Window> System::create_window(std::string key, std::string title
   return window_p;
 }
 
-// SURFACE
+// SURFACES
 std::shared_ptr<Surface> System::load_surface_from_bmp(std::string image_location, std::string key, std::string window_key) {
   SDL_PixelFormat* sdl_pixel_format_p = NULL;
   
@@ -78,4 +79,23 @@ void System::render_surface(std::string window_key, std::string surface_key, boo
   std::shared_ptr<Surface> surface_p = $surfaces.at(surface_key);
 
   window_p->render_surface(surface_p.get(), scaled);
+}
+
+// TEXTURES
+std::shared_ptr<Texture> System::load_texture_from_png(std::string image_location, std::string key, std::string window_key) {
+  init_png_img();
+
+  std::shared_ptr<Window> window_p = $windows.at(window_key);
+  std::shared_ptr<Texture> texture_p(Texture::load_from_png(image_location, window_p->sdl_renderer_p()));
+
+  $textures.insert({key, texture_p});
+
+  return texture_p;
+}
+
+void System::render_texture(std::string window_key, std::string texture_key) {
+  std::shared_ptr<Window> window_p = $windows.at(window_key);
+  std::shared_ptr<Texture> texture_p = $textures.at(texture_key);
+
+  window_p->render_texture(texture_p.get());
 }
