@@ -1,4 +1,4 @@
-#include "02_getting_an_image_on_the_screen.hpp"
+#include "engine.hpp"
 
 int main(int argc, char** args) {
   System system;

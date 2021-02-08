@@ -1,9 +1,8 @@
-#include "07_texture_loading_and_rendering.hpp"
+#include "engine.hpp"
 
 int main(int argc, char** args) {
   System system;
   system.init(SDL_INIT_VIDEO);
-  system.init_png_img();
   system.create_window("main", WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   try {
@@ -12,7 +11,9 @@ int main(int argc, char** args) {
     return 1;
   }
 
+  system.window("main")->renderer_reset();
   system.render_texture("main", "texture");
+  system.window("main")->renderer_render();
   system.delay(2000);
 
   return 0;

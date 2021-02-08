@@ -99,3 +99,8 @@ void System::render_texture(std::string window_key, std::string texture_key) {
 
   window_p->render_texture(texture_p.get());
 }
+
+// GETTERS
+std::shared_ptr<Window> System::window(std::string window_key) {
+  return $windows.at(window_key);
+}

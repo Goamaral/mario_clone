@@ -1,4 +1,4 @@
-#include "05_optimized_surface_loading_and_soft_stretching.hpp"
+#include "engine.hpp"
 
 int main(int argc, char** args) {
   System system;

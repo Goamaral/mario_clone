@@ -10,6 +10,7 @@
 
 #include "Texture.hpp"
 #include "Surface.hpp"
+#include "Color.hpp"
 
 class Window {
   public:
@@ -21,7 +22,10 @@ class Window {
     // INSTANCE METHODS
     // GENERAL
     void init(std::string, int, int);
+
+    // RENDERER
     void renderer_render();
+    void renderer_set_draw_color(Color);
     void renderer_reset();
 
     // SURFACES
@@ -29,6 +33,10 @@ class Window {
 
     // TEXTURES
     void render_texture(Texture*);
+    void render_rectangle(int, int, int, int, Color);
+    void render_rectangle_outline(int, int, int, int, Color);
+    void render_line(int, int, int, int, Color);
+    void render_point(int, int, Color);
 
     // GETTERS
     SDL_PixelFormat* surface_pixel_format();

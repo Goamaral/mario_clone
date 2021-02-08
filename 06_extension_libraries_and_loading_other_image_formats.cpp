@@ -1,4 +1,4 @@
-#include "06_extension_libraries_and_loading_other_image_formats.hpp"
+#include "engine.hpp"
 
 int main(int argc, char** args) {
   System system;

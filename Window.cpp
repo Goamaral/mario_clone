@@ -34,15 +34,20 @@ void Window::init(std::string title, int width, int height) {
   SDL_assert($sdl_surface_p != NULL);
 }
 
+// RENDERER - Future Renderer class
 void Window::renderer_render() {
   SDL_RenderPresent($sdl_renderer_p);
 }
 
-void Window::renderer_reset() {
-  int result = SDL_SetRenderDrawColor($sdl_renderer_p, 0xFF, 0xFF, 0xFF, 0xFF);
+void Window::renderer_set_draw_color(Color color) {
+  int result = SDL_SetRenderDrawColor($sdl_renderer_p, color.red, color.green, color.blue, color.alpha);
   SDL_assert(result == 0);
+}
 
-  result = SDL_RenderSetViewport($sdl_renderer_p, NULL);
+void Window::renderer_reset() {
+  renderer_set_draw_color(Color(0));
+
+  int result = SDL_RenderSetViewport($sdl_renderer_p, NULL);
   SDL_assert(result == 0);
 
   result = SDL_RenderClear($sdl_renderer_p);
@@ -63,12 +68,38 @@ void Window::render_surface(Surface* surface_p, bool scaled) {
 
 // TEXTURES
 void Window::render_texture(Texture* texture_p) {
-  renderer_reset();
-
   int result = SDL_RenderCopy($sdl_renderer_p, texture_p->sdl_p(), NULL, NULL);
   SDL_assert(result == 0);
+}
 
-  renderer_render();
+void Window::render_rectangle(int x, int y, int width, int height, Color color) {
+  SDL_Rect rectangle = { x, y, width, height };
+  renderer_set_draw_color(color);
+
+  int result = SDL_RenderFillRect($sdl_renderer_p, &rectangle);
+  SDL_assert(result == 0);
+}
+
+void Window::render_rectangle_outline(int x, int y, int width, int height, Color color) {
+  SDL_Rect rectangle = { x, y, width, height };
+  renderer_set_draw_color(color);
+
+  int result = SDL_RenderDrawRect($sdl_renderer_p, &rectangle);
+  SDL_assert(result == 0);
+}
+
+void Window::render_line(int x1, int y1, int x2, int y2, Color color) {
+  renderer_set_draw_color(color);
+
+  int result = SDL_RenderDrawLine($sdl_renderer_p, x1, y1, x2, y2);
+  SDL_assert(result == 0);
+}
+
+void Window::render_point(int x, int y, Color color) {
+  renderer_set_draw_color(color);
+
+  int result = SDL_RenderDrawPoint($sdl_renderer_p, x, y);
+  SDL_assert(result == 0);
 }
 
 // GETTERS

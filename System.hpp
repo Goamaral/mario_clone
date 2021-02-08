@@ -37,6 +37,9 @@ class System {
     std::shared_ptr<Texture> load_texture_from_png(std::string, std::string, std::string);
     void render_texture(std::string, std::string);
 
+    // GETTERS
+    std::shared_ptr<Window> window(std::string);
+
     private:
       bool $sdl_inited;
       bool $sdl_img_inited;
