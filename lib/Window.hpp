@@ -26,6 +26,8 @@ class Window {
     // RENDERER
     void renderer_render();
     void renderer_set_draw_color(Color);
+    void renderer_set_viewport(SDL_Rect*);
+    void renderer_clear();
     void renderer_reset();
 
     // SURFACES
@@ -41,9 +43,6 @@ class Window {
     // GETTERS
     SDL_PixelFormat* surface_pixel_format();
     SDL_Renderer* sdl_renderer_p();
-
-    // LEGACY
-    // void renderer_apply_texture(Texture*, SDL_Rect, SDL_Rect);
 
   private:
     SDL_Window* $sdl_p;

@@ -28,5 +28,8 @@ engine:
 08: engine
 	$(CXX) 08_geometry_rendering.cpp -o 08_geometry_rendering $(LDLIBS) $(CXXFLAGS)
 
+09: engine
+	$(CXX) 09_the_viewport.cpp -o 09_the_viewport $(LDLIBS) $(CXXFLAGS)
+
 14: engine
 	$(CXX) 14_animated_sprites_and_vsync.cpp Window.cpp Texture.cpp Surface.cpp -o 14 $(LDLIBS) $(CXXFLAGS)

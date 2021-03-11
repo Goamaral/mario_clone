@@ -44,14 +44,20 @@ void Window::renderer_set_draw_color(Color color) {
   SDL_assert(result == 0);
 }
 
+void Window::renderer_set_viewport(SDL_Rect* viewport_rect) {
+  int result = SDL_RenderSetViewport($sdl_renderer_p, viewport_rect);
+  SDL_assert(result == 0);
+}
+
+void Window::renderer_clear() {
+  int result = SDL_RenderClear($sdl_renderer_p);
+  SDL_assert(result == 0);
+}
+
 void Window::renderer_reset() {
   renderer_set_draw_color(Color(0));
-
-  int result = SDL_RenderSetViewport($sdl_renderer_p, NULL);
-  SDL_assert(result == 0);
-
-  result = SDL_RenderClear($sdl_renderer_p);
-  SDL_assert(result == 0);
+  renderer_set_viewport(NULL);
+  renderer_clear();
 }
 
 // SURFACES
@@ -110,15 +116,3 @@ SDL_PixelFormat* Window::surface_pixel_format() {
 SDL_Renderer* Window::sdl_renderer_p() {
   return $sdl_renderer_p;
 }
-
-// LEGACY
-// void Window::renderer_apply_texture(Texture* texture_p, SDL_Rect render_area, SDL_Rect clipping_area) {
-//   if (clipping_area.w <= 0) clipping_area.w = texture_p->width;
-//   if (clipping_area.h <= 0) clipping_area.h = texture_p->height;
-
-//   if (render_area.w <= 0) render_area.w = clipping_area.w;
-//   if (render_area.h <= 0) render_area.h = clipping_area.h;
-
-//   int result = SDL_RenderCopy($sdl_renderer_p, texture_p->pointer, &clipping_area, &render_area);
-//   SDL_assert(result == 0);
-// }
